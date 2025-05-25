@@ -1,15 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Инициализация фильтров
     let selectedBrands = [];
     const carContainer = document.getElementById('carContainer');
     
-    // Обработка фильтра по типу кузова
     const bodyTypeSelect = document.getElementById('bodyTypeSelect');
     if (bodyTypeSelect) {
         bodyTypeSelect.addEventListener('change', filterCars);
     }
 
-    // Обработка клика по брендам
     document.querySelectorAll('.brand').forEach(el => {
         el.addEventListener('click', () => {
             const brand = el.dataset.brand;
@@ -25,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Функция фильтрации автомобилей
     function filterCars() {
         const selectedBody = document.getElementById('bodyTypeSelect').value;
         const cars = document.querySelectorAll('.car-card');
@@ -37,10 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Обработка клика по карточкам автомобилей
     document.querySelectorAll('.car-card').forEach(card => {
         card.addEventListener('click', (e) => {
-            // Получаем оригинальный URL из атрибута href
             const href = card.getAttribute('href');
             if (href) {
                 e.preventDefault();
@@ -49,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Обработка формы быстрого поиска
     const quickSearchForm = document.getElementById('quickSearchForm');
     if (quickSearchForm) {
         quickSearchForm.addEventListener('submit', (e) => {
@@ -57,16 +50,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData(quickSearchForm);
             const params = new URLSearchParams();
 
-            // Добавляем параметры поиска в URL
             if (formData.get('brand')) params.append('brand', formData.get('brand'));
             if (formData.get('category')) params.append('category', formData.get('category'));
             if (formData.get('priceRange')) params.append('price', formData.get('priceRange'));
 
-            // Переходим на страницу каталога с параметрами
             window.location.href = `/catalog?${params.toString()}`;
         });
     }
 
-    // Инициализация фильтрации при загрузке страницы
     filterCars();
 }); 

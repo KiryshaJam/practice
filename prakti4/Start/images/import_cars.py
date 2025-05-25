@@ -340,7 +340,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 with app.app_context():
-    db.session.query(Car).delete()  # Очистить таблицу перед импортом (опционально)
+    db.session.query(Car).delete()
     for car_data in CARS:
         car = Car(
             make=car_data['make'],

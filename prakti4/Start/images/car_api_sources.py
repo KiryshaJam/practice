@@ -48,7 +48,6 @@ class CarAPISource(ABC):
         """Сохранение автомобиля в базу данных"""
         normalized_data = self.normalize_car_data(car_data)
         
-        # Поиск существующего автомобиля
         car = Car.query.filter_by(
             make=normalized_data['make'],
             model=normalized_data['model'],
@@ -61,7 +60,6 @@ class CarAPISource(ABC):
             db.session.add(car)
             db.session.commit()
             
-        # Сохранение спецификаций
         for name, value in normalized_data['specifications'].items():
             spec = CarSpecification(
                 car_id=car.id,
@@ -71,7 +69,6 @@ class CarAPISource(ABC):
             )
             db.session.add(spec)
             
-        # Сохранение отзывов
         for review in normalized_data['reviews']:
             car_review = CarReview(
                 car_id=car.id,
@@ -82,7 +79,6 @@ class CarAPISource(ABC):
             )
             db.session.add(car_review)
             
-        # Сохранение краш-тестов
         for crash_test in normalized_data['crash_tests']:
             test = CrashTest(
                 car_id=car.id,
@@ -191,7 +187,6 @@ class CarAPIManager:
                         for car_data in car_data_list:
                             source.save_car(car_data)
                             
-                        # Обновляем время последней синхронизации
                         api_source = APISource.query.get(source_id)
                         api_source.last_sync = datetime.utcnow()
                         db.session.commit()

@@ -5,7 +5,6 @@ import ruRU from 'antd/locale/ru_RU';
 import { Layout } from 'antd';
 import styled from 'styled-components';
 
-// Компоненты
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';

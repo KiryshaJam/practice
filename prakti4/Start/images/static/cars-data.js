@@ -1,25 +1,20 @@
 let carsData = [];
 
-// Создаем объект с утилитами для работы с автомобилями
 window.carUtils = {
-    // Функция для получения всех автомобилей
     getAllCars: function() {
         return carsData;
     },
 
-    // Функция для добавления нового автомобиля
     addCar: function(car) {
-        car.id = Date.now().toString(); // Генерируем уникальный ID
+        car.id = Date.now().toString();
         carsData.push(car);
         return car;
     },
 
-    // Функция для получения автомобиля по ID
     getCarById: function(id) {
         return carsData.find(car => car.id === id);
     },
 
-    // Функция для удаления автомобиля
     deleteCar: function(id) {
         const index = carsData.findIndex(car => car.id === id);
         if (index !== -1) {
@@ -29,7 +24,6 @@ window.carUtils = {
         return false;
     },
 
-    // Функция для фильтрации автомобилей
     filterCars: function(filters) {
         return carsData.filter(car => {
             if (filters.brand && car.brand !== filters.brand) return false;
@@ -40,7 +34,6 @@ window.carUtils = {
         });
     },
 
-    // Функция для обновления данных автомобиля
     updateCar: function(id, updatedCar) {
         const index = carsData.findIndex(car => car.id === id);
         if (index !== -1) {
@@ -50,7 +43,6 @@ window.carUtils = {
         return null;
     },
 
-// Функция для получения похожих автомобилей
     getSimilarCars: function(currentCar, limit = 3) {
         return carsData
         .filter(car => car.id !== currentCar.id && 
@@ -59,16 +51,13 @@ window.carUtils = {
         .slice(0, limit);
     },
 
-// Функция для получения рекомендаций на основе весов критериев
     getCarRecommendations: function(weights) {
-    // Нормализуем веса (сумма должна быть равна 1)
     const totalWeight = Object.values(weights).reduce((sum, weight) => sum + weight, 0);
     const normalizedWeights = {};
     Object.entries(weights).forEach(([criterion, weight]) => {
         normalizedWeights[criterion] = weight / totalWeight;
     });
 
-    // Оценки автомобилей по критериям (от 0 до 1)
     const carScores = {};
     
         carsData.forEach((car, index) => {
@@ -80,7 +69,6 @@ window.carUtils = {
                 'Надежность': this.calculateReliabilityScore(car)
         };
         
-        // Вычисляем общий балл автомобиля
         const matchScore = Object.entries(normalizedWeights).reduce((score, [criterion, weight]) => {
             return score + (criteriaScores[criterion] * weight);
         }, 0);
@@ -95,10 +83,9 @@ window.carUtils = {
         return Object.values(carScores).sort((a, b) => b.matchScore - a.matchScore);
     },
 
-    // Вспомогательные функции для расчета оценок
     calculatePriceScore: function(price) {
         const numericPrice = parseInt(price.replace(/[^\d]/g, ''));
-        return Math.max(0, 1 - (numericPrice / 10000000)); // Максимальная цена 10 млн
+        return Math.max(0, 1 - (numericPrice / 10000000));
     },
 
     calculateSafetyScore: function(car) {
@@ -131,25 +118,20 @@ window.carUtils = {
     },
 
     calculateEfficiencyScore: function(car) {
-        // Простая оценка на основе мощности двигателя
-        // Предполагаем, что менее мощные двигатели более экономичны
-        const maxPower = 400; // Максимальная мощность для нормализации
+        const maxPower = 400;
         return Math.max(0, 1 - (car.power / maxPower));
     },
 
     calculateReliabilityScore: function(car) {
-        // Простая оценка на основе пробега
-        const maxMileage = 100000; // Максимальный пробег для нормализации
+        const maxMileage = 100000;
         return Math.max(0, 1 - (car.mileage / maxMileage));
     },
 
-    // Проверка, находится ли автомобиль в избранном
     isInFavorites: function(carId) {
         const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         return favorites.includes(carId);
     },
 
-    // Добавление в избранное
     addToFavorites: function(car) {
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         if (!favorites.includes(car.id)) {
@@ -158,7 +140,6 @@ window.carUtils = {
         }
     },
 
-    // Удаление из избранного
     removeFromFavorites: function(carId) {
         let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
         const index = favorites.indexOf(carId);

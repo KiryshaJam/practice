@@ -17,7 +17,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Инициализация менеджера API будет происходить при первом запросе
 _api_manager = None
 
 def get_api_manager():
@@ -117,7 +116,6 @@ async def add_source(source_data: Dict):
         )
         db.session.add(source)
         db.session.commit()
-        # Переинициализируем менеджер с новым источником
         get_api_manager()._init_sources()
         return {"message": "Source added successfully", "source_id": source.id}
     except Exception as e:
@@ -138,7 +136,6 @@ async def update_source(source_id: int, source_data: Dict):
                 
         db.session.commit()
 
-        # Переинициализируем менеджер с обновленным источником
         get_api_manager()._init_sources()
         
         return {"message": "Source updated successfully"}
@@ -159,7 +156,6 @@ async def delete_source(source_id: int):
         db.session.delete(source)
         db.session.commit()
         
-        # Переинициализируем менеджер без удаленного источника
         get_api_manager()._init_sources()
         
         return {"message": "Source deleted successfully"}

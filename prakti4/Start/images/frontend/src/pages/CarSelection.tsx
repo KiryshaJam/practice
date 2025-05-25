@@ -35,7 +35,6 @@ const CarSelection = () => {
 
   const onFinish = (values: any) => {
     console.log('Form values:', values);
-    // TODO: Отправить данные на сервер для расчета рекомендаций
   };
 
   const renderProfileForm = () => (

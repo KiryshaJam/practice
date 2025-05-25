@@ -1,7 +1,4 @@
-// AHP парные сравнения с расчетом весов и согласованности
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Критерии и пояснения с иконками
     const criteria = [
         { key: 'Цена', desc: 'Стоимость автомобиля', icon: 'bi-cash-stack' },
         { key: 'Безопасность', desc: 'Системы безопасности и защиты', icon: 'bi-shield-lock' },
@@ -9,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
         { key: 'Экономичность', desc: 'Экономия топлива и обслуживания', icon: 'bi-fuel-pump' },
         { key: 'Надежность', desc: 'Долговечность и ремонтопригодность', icon: 'bi-tools' }
     ];
-    // Шкала Саати
     const saatyScale = [
         { value: 5, label: 'В 5 раз важнее (левый)' },
         { value: 3, label: 'В 3 раза важнее (левый)' },
@@ -17,10 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
         { value: 1/3,   label: 'В 3 раза важнее (правый)' },
         { value: 1/5,   label: 'В 5 раз важнее (правый)' }
     ];
-    // Таблица случайных индексов (RI)
     const RI = { 1: 0, 2: 0, 3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32 };
 
-    // Генерируем все уникальные пары критериев для сравнения
     const pairs = [];
     for (let i = 0; i < criteria.length; i++) {
         for (let j = i + 1; j < criteria.length; j++) {
@@ -29,9 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     let currentStep = 0;
     const totalSteps = pairs.length;
-    const answers = new Array(totalSteps).fill(0); // по умолчанию "Одинаково важны"
+    const answers = new Array(totalSteps).fill(0);
 
-    // DOM элементы
     const prevButton = document.getElementById('prevButton');
     const nextButton = document.getElementById('nextButton');
     const finishButton = document.getElementById('finishButton');
@@ -46,14 +39,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsBlock = document.getElementById('results');
     const weightsList = document.getElementById('weightsList');
 
-    // Функция отображения текущей пары
     function renderStep() {
         const [i, j] = pairs[currentStep];
         criterion1.innerHTML = `<i class="bi ${criteria[i].icon}" style="font-size:2rem;color:#3498db;"></i><br><span>${criteria[i].key}</span>`;
         criterion2.innerHTML = `<i class="bi ${criteria[j].icon}" style="font-size:2rem;color:#3498db;"></i><br><span>${criteria[j].key}</span>`;
         description1.textContent = criteria[i].desc;
         description2.textContent = criteria[j].desc;
-        // ВОССТАНАВЛИВАЕМ сохранённое значение для текущей пары
         slider.value = answers[currentStep];
         progressText.textContent = Math.round(((currentStep + 1) / totalSteps) * 100) + '%';
         progressBar.style.width = Math.round(((currentStep + 1) / totalSteps) * 100) + '%';
@@ -63,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resultsBlock.style.display = 'none';
     }
 
-    // Слушатели событий
     prevButton.onclick = function() {
         if (currentStep > 0) {
             currentStep--;
@@ -86,13 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
         helpText.style.display = (helpText.style.display === 'none') ? 'block' : 'none';
     };
 
-    // Построение матрицы парных сравнений
     function buildMatrix() {
         const n = criteria.length;
         const matrix = Array.from({ length: n }, () => Array(n).fill(1));
         for (let k = 0; k < pairs.length; k++) {
             const [i, j] = pairs[k];
-            const scaleIdx = answers[k] + 2; // Исправлено: преобразуем значение ползунка к индексу шкалы Саати
+            const scaleIdx = answers[k] + 2;
             const value = saatyScale[scaleIdx].value;
             matrix[i][j] = value;
             matrix[j][i] = 1 / value;
@@ -100,7 +89,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return matrix;
     }
 
-    // Нормализация по столбцам и расчет весов
     function calculateWeights(matrix) {
         const n = matrix.length;
         const colSums = Array(n).fill(0);
@@ -109,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 colSums[j] += matrix[i][j];
             }
         }
-        // Нормализуем и считаем веса
         const weights = Array(n).fill(0);
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
@@ -120,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return weights;
     }
 
-    // Расчет λmax
     function calculateLambdaMax(matrix, weights) {
         const n = matrix.length;
         let lambdaMax = 0;
@@ -134,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return lambdaMax;
     }
 
-    // Основная функция расчета AHP
     function calculateAHP() {
         const matrix = buildMatrix();
         const weights = calculateWeights(matrix);
@@ -146,7 +131,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showResults(weights, CR);
     }
 
-    // Показ результатов
     function showResults(weights, CR) {
         resultsBlock.style.display = 'block';
         let html = '<h4>Веса критериев:</h4><ul>';
@@ -166,7 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
         html += `</div>`;
         html += `<button id="repeatBtn" class="btn btn-warning mt-2">Повторить сравнение</button>`;
 
-        // Преобразуем веса в формат для API
         const weightsObj = {
             'Цена': weights[0],
             'Безопасность': weights[1],
@@ -175,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
             'Надежность': weights[4]
         };
 
-        // Получаем рекомендации с сервера
         fetch('/api/recommendations', {
             method: 'POST',
             headers: {
@@ -235,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             weightsList.innerHTML = html;
             
-            // Кнопка повторить
             const repeatBtn = document.getElementById('repeatBtn');
             if (repeatBtn) {
                 repeatBtn.onclick = function() {
@@ -248,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     finishButton.style.display = 'none';
                 };
             }
-            // Скрыть кнопки навигации
             prevButton.style.display = 'none';
             nextButton.style.display = 'none';
             finishButton.style.display = 'none';
@@ -260,6 +240,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Инициализация
     renderStep();
 }); 

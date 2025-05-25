@@ -1,16 +1,13 @@
-// Глобальные переменные
 let allCars = [];
 let currentFilters = {};
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
-// Загрузка автомобилей при загрузке страницы
 document.addEventListener('DOMContentLoaded', async () => {
     await loadCars();
     updateFilters();
     renderCars();
 });
 
-// Загрузка автомобилей с сервера
 async function loadCars() {
     try {
         const response = await fetch('/api/cars');
@@ -21,13 +18,11 @@ async function loadCars() {
     }
 }
 
-// Обновление фильтров на основе загруженных автомобилей
 function updateFilters() {
     const makes = new Set(allCars.map(car => car.make));
     const models = new Set(allCars.map(car => car.model));
     const years = new Set(allCars.map(car => car.year));
 
-    // Обновление селекта марок
     const makeSelect = document.getElementById('make');
     makeSelect.innerHTML = '<option value="">Все марки</option>';
     makes.forEach(make => {
@@ -37,7 +32,6 @@ function updateFilters() {
         makeSelect.appendChild(option);
     });
 
-    // Обновление селекта моделей
     const modelSelect = document.getElementById('model');
     modelSelect.innerHTML = '<option value="">Все модели</option>';
     models.forEach(model => {
@@ -47,7 +41,6 @@ function updateFilters() {
         modelSelect.appendChild(option);
     });
 
-    // Обновление селекта годов
     const yearSelect = document.getElementById('year');
     yearSelect.innerHTML = '<option value="">Все годы</option>';
     years.forEach(year => {
@@ -57,7 +50,6 @@ function updateFilters() {
         yearSelect.appendChild(option);
     });
 
-    // Обновление слайдера цены
     const priceSlider = document.getElementById('price');
     const maxPrice = Math.max(...allCars.map(car => car.price));
     priceSlider.max = maxPrice;
@@ -65,18 +57,15 @@ function updateFilters() {
     updatePriceValue(maxPrice);
 }
 
-// Обновление отображения цены
 function updatePriceValue(value) {
     const priceValue = document.getElementById('price-value');
     priceValue.textContent = `0 - ${value.toLocaleString()} ₽`;
 }
 
-// Обработчик изменения слайдера цены
 document.getElementById('price').addEventListener('input', (e) => {
     updatePriceValue(parseInt(e.target.value));
 });
 
-// Обработчик применения фильтров
 document.getElementById('apply-filters').addEventListener('click', () => {
     currentFilters = {
         make: document.getElementById('make').value,
@@ -87,7 +76,6 @@ document.getElementById('apply-filters').addEventListener('click', () => {
     renderCars();
 });
 
-// Отображение автомобилей
 function renderCars() {
     const carsGrid = document.querySelector('.cars-grid');
     carsGrid.innerHTML = '';
@@ -125,14 +113,12 @@ function createCarCard(car) {
         </div>
     `;
     
-    // Добавляем обработчик для кнопки избранного
     const favoriteBtn = card.querySelector('.favorite-btn');
     favoriteBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Предотвращаем переход на страницу деталей
+        e.stopPropagation();
         toggleFavorite(car.id, favoriteBtn);
     });
     
-    // Добавляем обработчик клика для перехода на страницу деталей
     card.addEventListener('click', (e) => {
         if (!e.target.closest('.favorite-btn')) {
         window.location.href = `/cars/${car.id}`;
@@ -142,7 +128,6 @@ function createCarCard(car) {
     return card;
 }
 
-// Обработка формы добавления автомобиля
 document.getElementById('addCarForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -168,10 +153,8 @@ document.getElementById('addCarForm').addEventListener('submit', async (e) => {
         });
         
         if (response.ok) {
-            // Очищаем форму
             document.getElementById('addCarForm').reset();
             
-            // Перезагружаем список автомобилей
             await loadCars();
             updateFilters();
             renderCars();
@@ -187,7 +170,6 @@ document.getElementById('addCarForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Обработка клика по автомобилю
 function showCarDetails(car) {
     const modal = document.getElementById('carDetails');
     const title = document.getElementById('carDetailsTitle');
@@ -200,19 +182,16 @@ function showCarDetails(car) {
     const crashTestSide = document.getElementById('crashTestSide');
     const crashTestRollover = document.getElementById('crashTestRollover');
 
-    // Заполнение основной информации
     title.textContent = `${car.make} ${car.model} ${car.year}`;
     image.src = car.image_url;
     image.alt = `${car.make} ${car.model}`;
 
-    // Заполнение технических характеристик
     if (car.specs) {
         power.textContent = `${car.specs.power} л.с.`;
         acceleration.textContent = `${car.specs.acceleration} сек`;
         fuelConsumption.textContent = `${car.specs.fuel_consumption} л/100км`;
     }
 
-    // Заполнение отзывов
     reviews.innerHTML = '';
     if (car.reviews && car.reviews.length > 0) {
         car.reviews.forEach(review => {
@@ -229,23 +208,19 @@ function showCarDetails(car) {
         reviews.innerHTML = '<p>Отзывов пока нет</p>';
     }
 
-    // Заполнение результатов краш-тестов
     if (car.crash_test) {
         crashTestFront.innerHTML = createStars(car.crash_test.front);
         crashTestSide.innerHTML = createStars(car.crash_test.side);
         crashTestRollover.innerHTML = createStars(car.crash_test.rollover);
     }
 
-    // Показываем модальное окно
     modal.style.display = 'flex';
 
-    // Обработчик закрытия модального окна
     const closeButton = modal.querySelector('.close');
     closeButton.onclick = () => {
         modal.style.display = 'none';
     };
 
-    // Закрытие по клику вне модального окна
     window.onclick = (event) => {
         if (event.target === modal) {
             modal.style.display = 'none';
@@ -257,7 +232,6 @@ function createStars(rating) {
     return '★'.repeat(rating) + '☆'.repeat(5 - rating);
 }
 
-// Обновление данных
 async function updateCarData() {
     try {
         const response = await fetch('/api/cars/update', {
@@ -279,24 +253,20 @@ async function updateCarData() {
     }
 }
 
-// Получение статистики
 async function getCarStats() {
     try {
         const response = await fetch('/api/cars/stats');
         if (response.ok) {
             const stats = await response.json();
             console.log('Car statistics:', stats);
-            // Здесь можно добавить отображение статистики
         }
     } catch (error) {
         console.error('Error getting car stats:', error);
     }
 }
 
-// Автоматическое обновление данных каждый час
 setInterval(updateCarData, 3600000); 
 
-// Функции для работы с избранным
 function toggleFavorite(carId, button) {
     const index = favorites.indexOf(carId);
     if (index === -1) {

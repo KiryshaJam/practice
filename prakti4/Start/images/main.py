@@ -12,26 +12,20 @@ from models import Base, User, Criteria, Car, CarSpecification, CarReview, Crash
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./app.db"
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create tables
 Base.metadata.create_all(bind=engine)
 
-# JWT settings
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# FastAPI app
 app = FastAPI(title="Car Selection Service")
 
-# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -40,10 +34,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -51,7 +43,6 @@ def get_db():
     finally:
         db.close()
 
-# Pydantic models
 class UserCreate(BaseModel):
     username: str
     email: str
@@ -83,7 +74,6 @@ class CriteriaWeights(BaseModel):
     maintenance_cost: float
     additional_options: float
 
-# Helper functions
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -93,9 +83,7 @@ def create_access_token(data: dict):
 
 def calculate_ahp_weights(comparison_matrix: np.ndarray) -> np.ndarray:
     """Calculate weights using the Analytic Hierarchy Process"""
-    # Normalize the matrix
     normalized_matrix = comparison_matrix / comparison_matrix.sum(axis=0)
-    # Calculate the weights
     weights = normalized_matrix.mean(axis=1)
     return weights
 
@@ -109,7 +97,6 @@ def calculate_consistency_ratio(comparison_matrix: np.ndarray) -> float:
     consistency_ratio = consistency_index / random_index.get(n, 1.49)
     return consistency_ratio
 
-# Routes
 @app.post("/register")
 async def register(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(User.email == user.email).first()
@@ -148,7 +135,6 @@ async def update_profile(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ):
-    # Verify token and get user
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email = payload.get("sub")
@@ -158,7 +144,6 @@ async def update_profile(
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    # Update user profile
     user.set_usage_goals(profile.usage_goals)
     user.budget = profile.budget
     user.body_type = profile.body_type
@@ -206,24 +191,18 @@ async def get_car_recommendations(
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    # Get user criteria weights
     criteria_weights = user.get_criteria()
     
-    # Get all cars
     cars = db.query(Car).all()
     
-    # Calculate scores for each car
     car_scores = []
     for car in cars:
         score = 0
-        # Calculate score based on criteria weights and car specifications
-        # This is a simplified version - you would need to implement more detailed scoring logic
         car_scores.append({
             "car": car,
             "score": score
         })
     
-    # Sort cars by score
     car_scores.sort(key=lambda x: x["score"], reverse=True)
     
-    return car_scores[:10]  # Return top 10 recommendations 
+    return car_scores[:10]

@@ -13,23 +13,19 @@ from api.routes import api
 app = Flask(__name__, template_folder='templates')
 CORS(app)
 
-# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
-# Конфигурация загрузки файлов
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
-app.config['SECRET_KEY'] = 'your-secret-key'  # Замените на реальный секретный ключ
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+app.config['SECRET_KEY'] = 'your-secret-key'
 
-# Создаем папку для загрузок, если её нет
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Временное хранилище пользователей (в реальном приложении используйте базу данных)
 users = {}
 
 def token_required(f):
@@ -41,7 +37,7 @@ def token_required(f):
             return jsonify({'message': 'Token is missing'}), 401
         
         try:
-            token = token.split(' ')[1]  # Убираем префикс 'Bearer '
+            token = token.split(' ')[1]
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             current_user = users.get(data['email'])
             if not current_user:
@@ -53,7 +49,6 @@ def token_required(f):
     
     return decorated
 
-# Маршруты для страниц
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -86,7 +81,6 @@ def favorites():
 def car_details():
     return render_template('car-details.html')
 
-# API маршруты
 @app.route('/api/register', methods=['POST'])
 def register():
     data = request.json
@@ -95,15 +89,12 @@ def register():
     first_name = data.get('firstName')
     last_name = data.get('lastName')
     
-    # Validate required fields
     if not all([email, password, first_name, last_name]):
         return jsonify({'message': 'All fields are required'}), 400
     
-    # Validate email format
     if '@' not in email:
         return jsonify({'message': 'Invalid email format'}), 400
         
-    # Validate password length
     if len(password) < 8:
         return jsonify({'message': 'Password must be at least 8 characters long'}), 400
     
@@ -112,7 +103,7 @@ def register():
     
     users[email] = {
         'email': email,
-        'password': password,  # В реальном приложении пароль нужно хешировать
+        'password': password,
         'firstName': first_name,
         'lastName': last_name,
         'created_at': datetime.utcnow()
@@ -134,7 +125,7 @@ def login():
     password = data.get('password')
     
     user = users.get(email)
-    if user and user['password'] == password:  # В реальном приложении сравнивайте хеши паролей
+    if user and user['password'] == password:
         token = jwt.encode({
             'email': email,
             'exp': datetime.utcnow() + timedelta(hours=24)
@@ -158,20 +149,16 @@ def get_profile(current_user):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Serve static files
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
-# Загружаем данные об автомобилях из JSON файла
 def load_cars_data():
     try:
         with open('cars_data.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
-            # Добавляем полные пути к изображениям
             for car in data.values():
                 car['images'] = [f"/static/{img}" for img in car['images']]
-                # Добавляем полный путь к логотипу бренда
                 car['brand_logo'] = f"/static/{car['brand'].lower()}-logo.png"
             return data
     except FileNotFoundError:
@@ -181,10 +168,8 @@ def load_cars_data():
         app.logger.error("Ошибка при чтении cars_data.json")
         return {}
 
-# Сохранение данных автомобилей в JSON файл
 def save_cars_data(cars_data):
     try:
-        # Удаляем полные пути перед сохранением
         data_to_save = {}
         for car_id, car in cars_data.items():
             car_copy = car.copy()
@@ -200,13 +185,11 @@ def save_cars_data(cars_data):
         app.logger.error(f"Ошибка при сохранении cars_data.json: {str(e)}")
         return False
 
-# Получить все автомобили
 @app.route('/api/cars', methods=['GET'])
 def get_cars():
     cars = load_cars_data()
     return jsonify(list(cars.values()))
 
-# Получить конкретный автомобиль по ID
 @app.route('/api/cars/<car_id>', methods=['GET'])
 def get_car(car_id):
     cars = load_cars_data()
@@ -215,14 +198,12 @@ def get_car(car_id):
         return jsonify(car)
     return jsonify({'error': 'Автомобиль не найден'}), 404
 
-# Добавить новый автомобиль
 @app.route('/api/cars', methods=['POST'])
 def add_car():
     cars = load_cars_data()
     data = request.form
     files = request.files
     
-    # Handle image upload
     images = []
     for file in files.getlist('images'):
         if file and allowed_file(file.filename):
@@ -230,7 +211,6 @@ def add_car():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             images.append(f'/static/uploads/{filename}')
     
-    # Create new car entry
     new_car = {
         'id': str(len(cars) + 1),
         'title': data.get('title'),
@@ -251,7 +231,6 @@ def add_car():
         return jsonify(new_car), 201
     return jsonify({'error': 'Ошибка при сохранении данных'}), 500
 
-# Обновить существующий автомобиль
 @app.route('/api/cars/<car_id>', methods=['PUT'])
 def update_car(car_id):
     cars = load_cars_data()
@@ -261,7 +240,6 @@ def update_car(car_id):
     data = request.form
     files = request.files
     
-    # Handle image upload
     images = []
     for file in files.getlist('images'):
         if file and allowed_file(file.filename):
@@ -269,7 +247,6 @@ def update_car(car_id):
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             images.append(f'/static/uploads/{filename}')
     
-    # Update car data
     car = cars[car_id]
     car.update({
         'title': data.get('title', car['title']),
@@ -289,14 +266,12 @@ def update_car(car_id):
         return jsonify(car)
     return jsonify({'error': 'Ошибка при сохранении данных'}), 500
 
-# Удалить автомобиль
 @app.route('/api/cars/<car_id>', methods=['DELETE'])
 def delete_car(car_id):
     cars = load_cars_data()
     if car_id not in cars:
         return jsonify({'error': 'Автомобиль не найден'}), 404
     
-    # Удаляем изображения автомобиля
     car = cars[car_id]
     for image_path in car['images']:
         try:
@@ -312,7 +287,6 @@ def delete_car(car_id):
         return '', 204
     return jsonify({'error': 'Ошибка при сохранении данных'}), 500
 
-# Загрузка изображений
 @app.route('/api/upload-image', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
@@ -323,7 +297,6 @@ def upload_image():
         return jsonify({'error': 'Не выбран файл'}), 400
     
     if file and allowed_file(file.filename):
-        # Генерируем уникальное имя файла
         filename = secure_filename(file.filename)
         unique_filename = f"{uuid.uuid4()}_{filename}"
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
@@ -340,17 +313,14 @@ def upload_image():
     
     return jsonify({'error': 'Недопустимый тип файла'}), 400
 
-# Получить рекомендации на основе весов критериев
 @app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
     weights = request.json
     cars = load_cars_data()
     
-    # Нормализуем веса
     total_weight = sum(weights.values())
     normalized_weights = {k: v/total_weight for k, v in weights.items()}
     
-    # Рассчитываем оценки для каждого автомобиля
     car_scores = []
     for car_id, car in cars.items():
         criteria_scores = {
@@ -361,7 +331,6 @@ def get_recommendations():
             'Надежность': calculate_reliability_score(car)
         }
         
-        # Вычисляем общий балл
         match_score = sum(score * normalized_weights[criterion] 
                          for criterion, score in criteria_scores.items())
         
@@ -371,11 +340,9 @@ def get_recommendations():
             'criteriaScores': criteria_scores
         })
     
-    # Сортируем по общему баллу
     car_scores.sort(key=lambda x: x['matchScore'], reverse=True)
-    return jsonify(car_scores[:5])  # Return top 5 recommendations
+    return jsonify(car_scores[:5])
 
-# Вспомогательные функции для расчета оценок
 def calculate_price_score(price):
     price_value = int(price.replace('₽', '').replace(' ', ''))
     max_price = 6000000
@@ -426,7 +393,6 @@ def calculate_reliability_score(car):
     
     return (score + mileage_score + age_score) / 3
 
-# Регистрация Blueprint API
 app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':

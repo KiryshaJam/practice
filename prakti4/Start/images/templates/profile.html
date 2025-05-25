@@ -184,17 +184,14 @@
         document.getElementById('drivetrain').value = data.drivetrain || '';
         document.getElementById('engine_power').value = data.engine_power || '';
         document.getElementById('fuel_consumption').value = data.fuel_consumption || '';
-        // Чекбоксы целей
         const usageGoals = data.usage_goals || [];
         document.querySelectorAll('#usage_goals_group input[type=checkbox]').forEach(cb => {
             cb.checked = usageGoals.includes(cb.value);
         });
-        // Чекбоксы безопасности
         const safety = data.safety_features || [];
         document.querySelectorAll('#safety_features_group input[type=checkbox]').forEach(cb => {
             cb.checked = safety.includes(cb.value);
         });
-        // Чекбоксы комфорта
         const comfort = data.comfort_features || [];
         document.querySelectorAll('#comfort_features_group input[type=checkbox]').forEach(cb => {
             cb.checked = comfort.includes(cb.value);
@@ -210,11 +207,8 @@
             Swal.fire('Ошибка', 'Вы не авторизованы', 'error');
                 return;
             }
-        // Чекбоксы целей
         const usage_goals = Array.from(document.querySelectorAll('#usage_goals_group input[type=checkbox]:checked')).map(cb => cb.value);
-        // Чекбоксы безопасности
         const safety_features = Array.from(document.querySelectorAll('#safety_features_group input[type=checkbox]:checked')).map(cb => cb.value);
-        // Чекбоксы комфорта
         const comfort_features = Array.from(document.querySelectorAll('#comfort_features_group input[type=checkbox]:checked')).map(cb => cb.value);
         
         const body = {

@@ -1,5 +1,3 @@
-// car-details.js
-
 function getCarIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');
@@ -29,7 +27,6 @@ async function loadCarDetails() {
         document.getElementById('price').textContent = car.price ? car.price + ' ₽' : '-';
         document.getElementById('description').textContent = car.description || '-';
 
-        // Краш-тесты
         let nhtsa = '-';
         let euro = '-';
         if (car.crash_tests && car.crash_tests.length) {
@@ -41,7 +38,6 @@ async function loadCarDetails() {
         document.getElementById('nhtsa-rating').textContent = nhtsa;
         document.getElementById('euro-ncap-rating').textContent = euro;
 
-        // Отзывы
         const reviewsList = document.getElementById('reviews-list');
         reviewsList.innerHTML = '';
         if (car.reviews && car.reviews.length) {

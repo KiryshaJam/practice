@@ -23,10 +23,9 @@ const Logo = styled.div`
 
 const Navigation = () => {
   const navigate = useNavigate();
-  const isAuthenticated = false; // TODO: Получать из контекста авторизации
+  const isAuthenticated = false;
 
   const handleLogout = () => {
-    // TODO: Реализовать выход
     navigate('/login');
   };
 

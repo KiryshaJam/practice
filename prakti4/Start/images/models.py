@@ -16,8 +16,7 @@ class User(db.Model):
     last_name = db.Column(db.String(64))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Профильные поля
-    usage_goals = db.Column(db.String(256))  # JSON-строка: список целей
+    usage_goals = db.Column(db.String(256))
     budget = db.Column(db.Integer)
     body_type = db.Column(db.String(32))
     fuel_type = db.Column(db.String(32))
@@ -25,9 +24,8 @@ class User(db.Model):
     drivetrain = db.Column(db.String(32))
     engine_power = db.Column(db.Integer)
     fuel_consumption = db.Column(db.Float)
-    safety_features = db.Column(db.String(256))  # JSON-строка: список
-    comfort_features = db.Column(db.String(256))  # JSON-строка: список
-    # Критерии выбора (JSON: веса критериев)
+    safety_features = db.Column(db.String(256))
+    comfort_features = db.Column(db.String(256))
     criteria = db.Column(db.String(512))
 
     def set_password(self, password):
@@ -60,7 +58,6 @@ class User(db.Model):
     def set_comfort_features(self, features_list):
         self.comfort_features = json.dumps(features_list)
 
-    # Связь с критериями
     criteria_set = db.relationship('Criteria', backref='user', lazy=True)
 
 class Criteria(db.Model):
@@ -69,8 +66,7 @@ class Criteria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     name = db.Column(db.String(64))
-    value = db.Column(db.Float)  # Вес критерия (0-1)
-    # user = db.relationship('User', backref=db.backref('criteria_set', lazy=True))
+    value = db.Column(db.Float)
 
 class Criterion(db.Model):
     __tablename__ = 'criterion'
@@ -82,7 +78,6 @@ class Criterion(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Связь с парными сравнениями
     comparisons = db.relationship('PairwiseComparison', backref='criterion', lazy=True)
 
 class PairwiseComparison(db.Model):
@@ -107,12 +102,10 @@ class Car(db.Model):
     transmission = db.Column(db.String(64))
     fuel_type = db.Column(db.String(64))
     image_url = db.Column(db.String(256))
-    # Новые поля для подбора
     safety_features = db.Column(db.String)
     comfort_features = db.Column(db.String)
     fuel_consumption = db.Column(db.Float)
     mileage = db.Column(db.Integer)
-    # Новые поля для подробного описания
     color = db.Column(db.String(64))
     generation = db.Column(db.String(128))
     generation_url = db.Column(db.String(256))
@@ -134,7 +127,6 @@ class Car(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Связи с другими таблицами
     specifications = db.relationship('CarSpecification', backref='car', lazy=True)
     reviews = db.relationship('CarReview', backref='car', lazy=True)
     crash_tests = db.relationship('CrashTest', backref='car', lazy=True)
@@ -175,7 +167,7 @@ class CarSpecification(db.Model):
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     value = db.Column(db.String(200), nullable=False)
-    source = db.Column(db.String(100))  # Источник данных (API)
+    source = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class CarReview(db.Model):
@@ -192,10 +184,10 @@ class CrashTest(db.Model):
     __tablename__ = 'crash_tests'
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.Integer, db.ForeignKey('cars.id'), nullable=False)
-    organization = db.Column(db.String(100))  # NCAP, IIHS и т.д.
+    organization = db.Column(db.String(100))
     rating = db.Column(db.String(10))
     year = db.Column(db.Integer)
-    details = db.Column(db.JSON)  # Детальные результаты тестов
+    details = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class APISource(db.Model):
@@ -205,6 +197,6 @@ class APISource(db.Model):
     api_url = db.Column(db.String(500))
     api_key = db.Column(db.String(200))
     last_sync = db.Column(db.DateTime)
-    sync_interval = db.Column(db.Integer)  # в минутах
+    sync_interval = db.Column(db.Integer)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow) 

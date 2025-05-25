@@ -1,7 +1,6 @@
 from simple_server import app, Car, db
 
 with app.app_context():
-    # Удаляем Toyota Camry (ID: 10) и BMW 3 Series (ID: 11)
     cars_to_delete = Car.query.filter(Car.id.in_([10, 11])).all()
     
     for car in cars_to_delete:

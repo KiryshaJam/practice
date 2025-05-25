@@ -6,17 +6,14 @@ import logging
 api = Blueprint('api', __name__)
 car_data_manager = CarDataManager()
 
-# Инициализация DaData API
 dadata_api = DadataAPI('8c70fbaff7d669cfb7dd873ca4cb42893213d598')
 
-# Регистрация DaData API
 car_data_manager.register_api('dadata', dadata_api)
 
 @api.route('/cars', methods=['GET'])
 def get_cars():
     """Получение списка автомобилей"""
     try:
-        # Получение параметров фильтрации
         filters = {
             'make': request.args.get('make'),
             'model': request.args.get('model'),
@@ -30,7 +27,6 @@ def get_cars():
             'fuel_type': request.args.get('fuel_type')
         }
         
-        # Удаление None значений
         filters = {k: v for k, v in filters.items() if v is not None}
         
         cars = car_data_manager.get_cars(**filters)
@@ -68,7 +64,6 @@ def get_car_stats():
     try:
         cars = car_data_manager.get_cars()
         
-        # Статистика по маркам
         makes = {}
         for car in cars:
             make = car['make']
@@ -76,7 +71,6 @@ def get_car_stats():
                 makes[make] = 0
             makes[make] += 1
         
-        # Статистика по годам
         years = {}
         for car in cars:
             year = car['year']
@@ -84,7 +78,6 @@ def get_car_stats():
                 years[year] = 0
             years[year] += 1
         
-        # Статистика по ценам
         prices = [car['price'] for car in cars]
         avg_price = sum(prices) / len(prices) if prices else 0
         

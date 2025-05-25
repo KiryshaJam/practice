@@ -1,4 +1,4 @@
-/* Общие стили */
+
 * {
     margin: 0;
     padding: 0;
@@ -48,7 +48,6 @@ nav a.active {
     color: #3498db;
 }
 
-/* Стили для профиля */
 .profile-container {
     max-width: 800px;
     margin: 2rem auto;
@@ -124,7 +123,6 @@ nav a.active {
     color: #7f8c8d;
 }
 
-/* Стили для маленького аватара в шапке */
 .user-profile {
     display: flex;
     align-items: center;
@@ -232,7 +230,6 @@ nav a.active {
     }
 }
 
-/* Стили для парных сравнений */
 .pairwise-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -542,7 +539,6 @@ nav a.active {
     }
 }
 
-/* Стили для каталога автомобилей */
 .cars {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -595,7 +591,6 @@ nav a.active {
     color: #27ae60;
 }
 
-/* Стили для фильтров */
 .brand-strip {
     background: white;
     padding: 1rem 0;
@@ -657,7 +652,6 @@ footer {
     margin-top: 2rem;
 }
 
-/* Стили для hero секции */
 .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/hero-bg.jpg');
     background-size: cover;
@@ -715,7 +709,6 @@ footer {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* Стили для страниц авторизации */
 .auth-container {
     min-height: calc(100vh - 160px);
     display: flex;
@@ -840,7 +833,6 @@ footer {
     text-decoration: underline;
 }
 
-/* Стили для сообщений об ошибках */
 .error-message {
     color: #e74c3c;
     font-size: 14px;
@@ -856,7 +848,6 @@ footer {
     display: block;
 }
 
-/* Адаптивность для мобильных устройств */
 @media (max-width: 480px) {
     .auth-form {
         padding: 30px 20px;
@@ -876,7 +867,6 @@ footer {
     }
 }
 
-/* Анимация для кнопок */
 @keyframes pulse {
     0% {
         transform: scale(1);
@@ -893,7 +883,6 @@ footer {
     animation: pulse 0.3s ease-in-out;
 }
 
-/* Стили для валидации в реальном времени */
 .form-group input:valid {
     border-color: #2ecc71;
 }
@@ -902,7 +891,6 @@ footer {
     border-color: #e74c3c;
 }
 
-/* Дополнительные стили для улучшения UX */
 .auth-form::before {
     content: '';
     position: absolute;
@@ -916,7 +904,6 @@ footer {
     opacity: 0.5;
 }
 
-/* Стили для состояния загрузки */
 .submit-button.loading {
     position: relative;
     color: transparent;
@@ -942,23 +929,19 @@ footer {
     }
 }
 
-/* Стили для страницы профиля */
 .profile-container h2 {
     color: #2980b9;
     margin-bottom: 1.5rem;
 }
 
-/* Стили для заголовков */
 h1, h2, h3, h4, h5, h6 {
     color: #2c3e50;
 }
 
-/* Стили для текста */
 p {
     color: #34495e;
 }
 
-/* Стили для ссылок */
 a {
     color: #3498db;
     text-decoration: none;
@@ -968,7 +951,6 @@ a:hover {
     color: #2980b9;
 }
 
-/* Стили для страницы деталей автомобиля */
 .car-details-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -991,7 +973,6 @@ a:hover {
     }
 }
 
-/* Image Gallery Styles */
 .car-gallery {
     position: relative;
 }
@@ -1043,7 +1024,6 @@ a:hover {
     object-fit: cover;
 }
 
-/* Toast Message Styles */
 .toast-message {
     position: fixed;
     bottom: 2rem;
@@ -1063,7 +1043,6 @@ a:hover {
     opacity: 1;
 }
 
-/* Favorite Button Styles */
 .favorite-button {
     display: inline-flex;
     align-items: center;
@@ -1091,7 +1070,6 @@ a:hover {
     line-height: 1;
 }
 
-/* Car Actions Styles */
 .car-actions {
     display: flex;
     gap: 1rem;
@@ -1176,7 +1154,6 @@ a:hover {
     }
 }
 
-/* Стили для информации о согласованности */
 .consistency-info {
     margin-bottom: 2rem;
 }
@@ -1272,7 +1249,6 @@ a:hover {
     color: #3498db;
 }
 
-/* Стили для весов критериев */
 .weights-section {
     margin-top: 2rem;
 }
@@ -1322,7 +1298,6 @@ a:hover {
     transition: width 0.5s ease;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .status-header {
         flex-direction: column;
@@ -1338,7 +1313,6 @@ a:hover {
     }
 }
 
-/* Стили для рекомендаций */
 .recommendations-section {
     margin-top: 3rem;
     padding: 2rem;
@@ -1508,7 +1482,6 @@ a:hover {
     margin: 3rem 0;
 }
 
-/* Адаптивность для рекомендаций */
 @media (max-width: 992px) {
     .car-recommendation {
         flex-direction: column;
@@ -1534,7 +1507,6 @@ a:hover {
     }
 }
 
-/* Стили для кнопки нового сравнения */
 .new-comparison-container {
     margin-top: 2rem;
     text-align: center;
@@ -1563,7 +1535,6 @@ a:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Стили для разделителя */
 .criteria-recommendations-divider {
     margin: 2rem 0;
     height: 1px;
@@ -1652,7 +1623,6 @@ a:hover {
     background: #f8f9fa;
 }
 
-/* Стили для избранного */
 .favorites-container {
     max-width: 1200px;
     margin: 2rem auto;
@@ -1754,7 +1724,6 @@ a:hover {
     font-size: 1.1rem;
 }
 
-/* Стили для кнопки избранного в модальном окне */
 .car-header {
     display: flex;
     justify-content: space-between;
@@ -1896,7 +1865,6 @@ a:hover {
     }
 }
 
-/* Навигация */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,.1);
 }
@@ -1909,7 +1877,6 @@ a:hover {
     font-weight: 500;
 }
 
-/* Избранное */
 .favorites-container {
     padding: 2rem 0;
 }
@@ -1934,7 +1901,6 @@ a:hover {
     color: white;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .hero {
         padding: 60px 0;
@@ -1958,7 +1924,6 @@ a:hover {
     }
 }
 
-/* Анимации */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -2013,7 +1978,6 @@ a:hover {
     text-indent: 10px;
 }
 
-/* Цветовая градация для разных процентов совпадения */
 .progress-bar[style*="width: 8"]:not([style*="width: 9"]),
 .progress-bar[style*="width: 9"],
 .progress-bar[style*="width: 100"] {

@@ -2,11 +2,7 @@ from simple_server import app, db, Car
 
 def add_sample_cars():
     with app.app_context():
-        # Delete all existing cars first to start fresh with sample data
-        # Car.query.delete()
-        # db.session.commit()
 
-        # Sample car data based on the user's image
         sample_cars_data = [
             {'make': 'Kia', 'model': 'Rio', 'year': 2021, 'price': 1100000, 'specs': {}, 'images': ['/static/images/kia_rio.jpg'], 'features': [], 'body_type': 'Седан', 'engine_type': '1.6 л / 123 л.с.', 'transmission': 'Автоматическая', 'fuel_type': 'Бензин'},
             {'make': 'Volkswagen', 'model': 'Passat', 'year': 2018, 'price': 1700000, 'specs': {}, 'images': ['/static/images/volkswagen_passat.jpg'], 'features': [], 'body_type': 'Седан', 'engine_type': '1.8 л / 180 л.с.', 'transmission': 'Автоматическая', 'fuel_type': 'Бензин'},
@@ -17,7 +13,6 @@ def add_sample_cars():
         ]
 
         for car_data in sample_cars_data:
-            # Check if car already exists to avoid duplicates if script is run multiple times
             existing_car = Car.query.filter_by(make=car_data['make'], model=car_data['model'], year=car_data['year'], price=car_data['price']).first()
             if not existing_car:
                 car = Car(

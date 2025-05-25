@@ -1,13 +1,9 @@
-// Глобальная переменная для текущего автомобиля
 let currentCar = null;
 
-// Загрузка данных при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    // Получаем ID автомобиля из URL
     const carPath = window.location.pathname;
     const carId = carPath.split('/').pop();
 
-    // Получаем данные об автомобиле
     const car = window.carUtils.getCarById(carId);
     if (!car) {
         Swal.fire({
@@ -20,12 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Заполняем основную информацию
     document.getElementById('carTitle').textContent = car.name;
     document.getElementById('carPrice').textContent = car.price;
     document.getElementById('carDescription').textContent = car.description;
 
-    // Заполняем характеристики
     const specsTable = document.getElementById('specsTable');
     const specs = [
         { label: 'Марка', value: car.brand },
@@ -50,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Заполняем изображения
     const mainImage = document.getElementById('mainImage');
     const thumbnailsContainer = document.getElementById('thumbnailsContainer');
     
@@ -75,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Заполняем комплектацию
     const featuresList = document.getElementById('featuresList');
     if (car.features && car.features.length > 0) {
         car.features.forEach(feature => {
@@ -91,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Обработка кнопки "В избранное"
     const favoriteBtn = document.getElementById('addToFavoriteBtn');
     const updateFavoriteButton = () => {
         const isInFavorites = window.isInFavorites(carId);
@@ -128,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFavoriteButton();
     });
 
-    // Обработка кнопки "Связаться"
     document.getElementById('contactSellerBtn').addEventListener('click', () => {
         Swal.fire({
             title: 'Контакты продавца',
@@ -142,11 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Инициализация состояния кнопки избранного
     updateFavoriteButton();
 });
 
-// Настройка обработчиков событий
 function setupEventListeners() {
     const favoriteBtn = document.getElementById('favoriteBtn');
     if (favoriteBtn) {
@@ -154,9 +142,7 @@ function setupEventListeners() {
     }
 }
 
-// Загрузка деталей автомобиля
 function loadCarDetails() {
-    // Получаем ID автомобиля из URL
     const urlParams = new URLSearchParams(window.location.search);
     const carId = urlParams.get('id');
 
@@ -166,7 +152,6 @@ function loadCarDetails() {
     }
 
     try {
-        // Получаем данные автомобиля
         currentCar = window.carUtils.getCarById(carId);
         
         if (!currentCar) {
@@ -174,15 +159,12 @@ function loadCarDetails() {
             return;
         }
 
-        // Обновляем заголовок страницы
         document.title = `${currentCar.name} - АвтоЭксперт`;
 
-        // Заполняем основную информацию
         document.getElementById('carName').textContent = currentCar.name;
         document.getElementById('carPrice').textContent = currentCar.price;
         document.getElementById('carDescription').textContent = currentCar.description;
 
-        // Заполняем характеристики
         const specsList = document.getElementById('carSpecs');
         specsList.innerHTML = `
             <li><strong>Год выпуска:</strong> ${currentCar.year}</li>
@@ -193,7 +175,6 @@ function loadCarDetails() {
             <li><strong>Привод:</strong> ${currentCar.drivetrain}</li>
         `;
 
-        // Заполняем особенности
         const featuresContainer = document.getElementById('carFeatures');
         featuresContainer.innerHTML = currentCar.features.map(feature => `
             <div class="col-md-4 mb-2">
@@ -204,13 +185,10 @@ function loadCarDetails() {
             </div>
         `).join('');
 
-        // Загружаем изображения в карусель
         loadCarImages();
 
-        // Загружаем похожие автомобили
         loadSimilarCars();
 
-        // Обновляем состояние кнопки избранного
         updateFavoriteButton();
 
     } catch (error) {
@@ -219,7 +197,6 @@ function loadCarDetails() {
     }
 }
 
-// Загрузка изображений в карусель
 function loadCarImages() {
     const carouselInner = document.getElementById('carImageSlides');
     if (!currentCar || !carouselInner) return;
@@ -231,7 +208,6 @@ function loadCarImages() {
     `).join('');
 }
 
-// Загрузка похожих автомобилей
 function loadSimilarCars() {
     const similarCarsContainer = document.getElementById('similarCars');
     if (!currentCar || !similarCarsContainer) return;
@@ -257,7 +233,6 @@ function loadSimilarCars() {
     `).join('');
 }
 
-// Функция для переключения избранного
 function toggleFavorite() {
     if (!currentCar) return;
 
@@ -292,13 +267,11 @@ function toggleFavorite() {
     }
 }
 
-// Функция для проверки, находится ли автомобиль в избранном
 function isInFavorites(carId) {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     return favorites.includes(carId);
 }
 
-// Функция для добавления в избранное
 function addToFavorites(carId) {
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     if (!favorites.includes(carId)) {
@@ -308,7 +281,6 @@ function addToFavorites(carId) {
     }
 }
 
-// Функция для удаления из избранного
 function removeFromFavorites(carId) {
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     const index = favorites.indexOf(carId);
@@ -319,7 +291,6 @@ function removeFromFavorites(carId) {
     }
 }
 
-// Функция для обновления состояния кнопки избранного
 function updateFavoriteButton() {
     const favoriteBtn = document.getElementById('favoriteBtn');
     if (!favoriteBtn || !currentCar) return;
@@ -334,7 +305,6 @@ function updateFavoriteButton() {
     }
 }
 
-// Функция для отображения уведомлений
 function showToast(message) {
     Swal.fire({
         text: message,
@@ -347,7 +317,6 @@ function showToast(message) {
     });
 }
 
-// Функция для отображения ошибок
 function showError(message) {
     Swal.fire({
         title: 'Ошибка!',

@@ -8,17 +8,16 @@ import time
 
 class WebScraper(BaseAPI):
     def __init__(self):
-        super().__init__()  # Вызываем конструктор базового класса
+        super().__init__()
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         })
-        print("WebScraper initialized")  # Отладочная информация
+        print("WebScraper initialized")
 
     def _parse_price(self, text: str) -> float:
         """Парсинг цены из текста"""
         if not text:
             return 0.0
-        # Удаляем все нецифровые символы, кроме точки
         price_str = re.sub(r'[^\d.]', '', text)
         try:
             return float(price_str)
@@ -29,7 +28,6 @@ class WebScraper(BaseAPI):
         """Парсинг года из текста"""
         if not text:
             return 2023
-        # Ищем 4 цифры подряд
         match = re.search(r'\d{4}', text)
         if match:
             return int(match.group())
@@ -41,7 +39,7 @@ class WebScraper(BaseAPI):
 
     def _normalize_car_data(self, car_data: Dict[str, Any]) -> Dict[str, Any]:
         """Нормализация данных об автомобиле"""
-        print("Normalizing car data:", car_data)  # Отладочная информация
+        print("Normalizing car data:", car_data)
         normalized = {
             'make': car_data.get('make', ''),
             'model': car_data.get('model', ''),
@@ -55,7 +53,7 @@ class WebScraper(BaseAPI):
             'source_id': car_data.get('source_id', ''),
             'raw_data': car_data
         }
-        print("Normalized data:", normalized)  # Отладочная информация
+        print("Normalized data:", normalized)
         return normalized
 
 class AutoRuScraper(WebScraper):
@@ -66,7 +64,6 @@ class AutoRuScraper(WebScraper):
         self.logger.info("Получение автомобилей с Auto.ru с фильтрами: %s", kwargs)
         
         try:
-            # Тестовые данные для демонстрации (расширенный список)
             test_cars = [
                 {
                     'make': 'Toyota', 'model': 'Camry', 'year': 2020, 'price': 2500000, 'body_type': 'Седан', 'engine_type': '2.5L', 'transmission': 'Автомат', 'fuel_type': 'Бензин', 'image_url': '/static/images/cars/toyota_camry.jpg', 'source_id': '1'
@@ -100,7 +97,6 @@ class AutoRuScraper(WebScraper):
                 }
             ]
 
-            # Фильтрация по параметрам
             filtered_cars = test_cars
             if 'make' in kwargs:
                 filtered_cars = [car for car in filtered_cars if car['make'].lower() == kwargs['make'].lower()]
@@ -124,7 +120,6 @@ class AutoRuScraper(WebScraper):
     def get_car_details(self, car_id: str) -> Dict[str, Any]:
         """Получение детальной информации об автомобиле"""
         try:
-            # Подробные тестовые данные для всех машин
             test_cars = {
                 '1': {
                     'make': 'Toyota',
@@ -437,7 +432,6 @@ class AutoRuScraper(WebScraper):
     def update_car_data(self) -> None:
         """Обновление данных об автомобилях"""
         try:
-            # Здесь будет реальное обновление данных с Auto.ru
             self.logger.info("Обновление данных с Auto.ru")
         except Exception as e:
             self.logger.error(f"Ошибка при обновлении данных с Auto.ru: {e}") 

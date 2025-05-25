@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = params.get('id');
     const source = params.get('source') || 'auto_ru_scraper';
     if (!id) {
-        // document.getElementById('car-details').innerHTML = '<p>ID автомобиля не указан</p>';
         return;
     }
 
@@ -11,15 +10,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const response = await fetch(`/api/cars/${source}/${id}`);
         const car = await response.json();
 
-        // --- Удаляем весь рендеринг в container.innerHTML ---
-        // const container = document.getElementById('car-details');
-        // if (!car || car.error) {
-        //     container.innerHTML = '<div class="alert alert-danger mt-4"><h2>Автомобиль не найден</h2></div>';
-        //     return;
-        // }
-        // ... и всё, что связано с container.innerHTML ...
-
-        // --- Оставляем только работу с car-details-js ---
         const crashTestRatings = {
             'audi q7 2022': { stars: 5, text: '5 из 5 (Euro NCAP)' },
             'kia rio 2021': { stars: 3, text: '3 из 5 (Euro NCAP)' },
@@ -76,6 +66,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
-        // document.getElementById('car-details').innerHTML = '<p>Произошла ошибка при загрузке данных</p>';
     }
 }); 

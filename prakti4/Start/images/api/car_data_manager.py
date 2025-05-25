@@ -15,14 +15,12 @@ class CarDataManager:
         self.logger = logging.getLogger(__name__)
         self.apis: Dict[str, BaseAPI] = {}
         self.last_update = None
-        self.update_interval = timedelta(hours=1)  # Интервал обновления данных
+        self.update_interval = timedelta(hours=1)
         
-        # Инициализация API ключей
         self.api_keys = {
             'dadata': os.getenv('DADATA_API_KEY', '8c70fbaff7d669cfb7dd873ca4cb42893213d598')
         }
         
-        # Инициализация API эндпоинтов
         self.api_endpoints = {
             'dadata': 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest'
         }
@@ -47,7 +45,6 @@ class CarDataManager:
             except Exception as e:
                 self.logger.error(f"Ошибка при получении данных из {api_name}: {e}")
 
-        # Дедупликация автомобилей
         deduplicated_cars = self._deduplicate_cars(all_cars)
         self.logger.info(f"Всего уникальных автомобилей: {len(deduplicated_cars)}")
         
@@ -91,25 +88,21 @@ class CarDataManager:
             if key not in unique_cars:
                 unique_cars[key] = car
             else:
-                # Объединяем данные из разных источников
                 existing_car = unique_cars[key]
                 for field in ['price', 'body_type', 'engine_type', 'transmission', 'fuel_type']:
                     if not existing_car.get(field) and car.get(field):
                         existing_car[field] = car[field]
                 
-                # Объединяем изображения
                 if 'images' in car and 'images' in existing_car:
                     existing_car['images'].extend(car['images'])
                 elif 'images' in car:
                     existing_car['images'] = car['images']
                 
-                # Объединяем отзывы
                 if 'reviews' in car and 'reviews' in existing_car:
                     existing_car['reviews'].extend(car['reviews'])
                 elif 'reviews' in car:
                     existing_car['reviews'] = car['reviews']
                 
-                # Объединяем результаты краш-тестов
                 if 'crash_test' in car and 'crash_test' in existing_car:
                     existing_car['crash_test'].update(car['crash_test'])
                 elif 'crash_test' in car:
@@ -120,7 +113,6 @@ class CarDataManager:
     def _fetch_car_specs(self, make: str, model: str) -> Dict[str, Any]:
         """Получение технических характеристик автомобиля"""
         try:
-            # Запрос к CarAPI для получения технических характеристик
             response = requests.get(
                 f"{self.api_endpoints['carapi']}/trims",
                 params={'make': make, 'model': model},
@@ -137,7 +129,6 @@ class CarDataManager:
     def _fetch_car_reviews(self, make: str, model: str) -> List[Dict[str, Any]]:
         """Получение отзывов об автомобиле"""
         try:
-            # Здесь можно добавить запросы к различным источникам отзывов
             return []
         except Exception as e:
             self.logger.error(f"Ошибка при получении отзывов: {e}")
@@ -146,7 +137,6 @@ class CarDataManager:
     def _fetch_crash_tests(self, make: str, model: str) -> Dict[str, Any]:
         """Получение результатов краш-тестов"""
         try:
-            # Здесь можно добавить запросы к источникам данных о краш-тестах
             return {}
         except Exception as e:
             self.logger.error(f"Ошибка при получении результатов краш-тестов: {e}")

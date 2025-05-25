@@ -1,17 +1,12 @@
-// Функция для добавления автомобиля в избранное
 function addToFavorites(car) {
-    // Проверяем валидность данных автомобиля
     if (!car || !car.id || !car.name || !car.image || !car.price) {
         console.error('Некорректные данные автомобиля:', car);
         return;
     }
 
-    // Получаем текущий список избранного
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     
-    // Проверяем, не добавлен ли уже этот автомобиль
     if (!favorites.some(item => item.id === car.id)) {
-        // Добавляем только необходимые поля
         favorites.push({
             id: car.id,
             name: car.name,
@@ -23,7 +18,6 @@ function addToFavorites(car) {
         
         localStorage.setItem('favorites', JSON.stringify(favorites));
         
-        // Показываем уведомление
         Swal.fire({
             title: 'Успешно!',
             text: 'Автомобиль добавлен в избранное',
@@ -34,7 +28,6 @@ function addToFavorites(car) {
     }
 }
 
-// Функция для удаления автомобиля из избранного
 function removeFromFavorites(carId) {
     Swal.fire({
         title: 'Удалить из избранного?',
@@ -50,14 +43,13 @@ function removeFromFavorites(carId) {
             favorites = favorites.filter(id => id !== carId);
             localStorage.setItem('favorites', JSON.stringify(favorites));
             
-            // Плавно скрываем карточку перед удалением
             const card = document.getElementById(`favorite-${carId}`);
             card.style.transition = 'all 0.3s ease';
             card.style.opacity = '0';
             card.style.transform = 'scale(0.8)';
             
             setTimeout(() => {
-                loadFavorites(); // Перезагружаем список
+                loadFavorites();
             }, 300);
 
             Swal.fire({
@@ -71,14 +63,12 @@ function removeFromFavorites(carId) {
     });
 }
 
-// Функция для проверки, находится ли автомобиль в избранном
 function isInFavorites(carId) {
     if (!carId) return false;
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     return favorites.some(car => car.id === carId);
 }
 
-// Функция для очистки всего списка избранного
 function clearAllFavorites() {
     localStorage.removeItem('favorites');
     if (window.location.pathname === '/favorites') {
@@ -87,7 +77,6 @@ function clearAllFavorites() {
     updateFavoriteButtons();
 }
 
-// Функция для загрузки избранных автомобилей
 function loadFavorites() {
     const favoritesList = document.getElementById('favoritesList');
     const emptyFavorites = document.getElementById('emptyFavorites');
@@ -105,7 +94,6 @@ function loadFavorites() {
     favoritesList.innerHTML = favoriteCars.map(car => createFavoriteCard(car)).join('');
 }
 
-// Создание карточки избранного автомобиля
 function createFavoriteCard(car) {
     return `
         <div class="col" id="favorite-${car.id}">
@@ -136,12 +124,10 @@ function createFavoriteCard(car) {
     `;
 }
 
-// Функция для перехода на страницу деталей автомобиля
 function showCarDetails(carId) {
     window.location.href = `/car-details?id=${carId}`;
 }
 
-// Функция для отображения уведомлений
 function showToast(message) {
     Swal.fire({
         text: message,
@@ -154,7 +140,6 @@ function showToast(message) {
     });
 }
 
-// Функция для обновления состояния кнопок избранного на странице
 function updateFavoriteButtons() {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     document.querySelectorAll('.favorite-button').forEach(button => {
@@ -175,13 +160,11 @@ function updateFavoriteButtons() {
     });
 }
 
-// Загрузка избранных автомобилей при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     loadFavorites();
     checkAuth();
 });
 
-// Функция проверки авторизации
 function checkAuth() {
     const token = localStorage.getItem('auth_token');
     if (!token && window.location.pathname === '/favorites') {

@@ -19,7 +19,6 @@ class DadataAPI(BaseAPI):
     def get_cars(self, **kwargs) -> List[Dict[str, Any]]:
         """Получение списка автомобилей из DaData"""
         try:
-            # Получение списка марок автомобилей
             response = requests.post(
                 f"{self.BASE_URL}/car_brand",
                 headers=self.headers,
@@ -32,14 +31,12 @@ class DadataAPI(BaseAPI):
             
             brands = response.json().get('suggestions', [])
             
-            # Получение списка моделей для каждой марки
             cars = []
             for brand in brands:
                 brand_name = brand.get('value', '')
                 if not brand_name:
                     continue
                 
-                # Получение моделей для марки
                 models_response = requests.post(
                     f"{self.BASE_URL}/car_model",
                     headers=self.headers,
@@ -55,7 +52,6 @@ class DadataAPI(BaseAPI):
                 
                 models = models_response.json().get('suggestions', [])
                 
-                # Создание объектов автомобилей
                 for model in models:
                     car = {
                         'make': brand_name,
@@ -83,10 +79,8 @@ class DadataAPI(BaseAPI):
     def get_car_details(self, car_id: str) -> Dict[str, Any]:
         """Получение детальной информации об автомобиле"""
         try:
-            # Разбор идентификатора автомобиля
             _, make, model = car_id.split('_')
             
-            # Получение информации о марке
             brand_response = requests.post(
                 f"{self.BASE_URL}/car_brand",
                 headers=self.headers,
@@ -99,7 +93,6 @@ class DadataAPI(BaseAPI):
             
             brand_info = brand_response.json().get('suggestions', [{}])[0]
             
-            # Получение информации о модели
             model_response = requests.post(
                 f"{self.BASE_URL}/car_model",
                 headers=self.headers,
@@ -115,12 +108,11 @@ class DadataAPI(BaseAPI):
             
             model_info = model_response.json().get('suggestions', [{}])[0]
             
-            # Формирование детальной информации
             car_details = {
                 'make': make,
                 'model': model,
-                'year': 2023,  # По умолчанию
-                'price': 0,    # По умолчанию
+                'year': 2023,
+                'price': 0,
                 'body_type': brand_info.get('data', {}).get('body_type', ''),
                 'engine_type': model_info.get('data', {}).get('engine_type', ''),
                 'transmission': model_info.get('data', {}).get('transmission', ''),
@@ -144,6 +136,5 @@ class DadataAPI(BaseAPI):
         """Обновление данных об автомобилях"""
         try:
             self.logger.info("Обновление данных из DaData")
-            # Здесь можно добавить логику обновления данных
         except Exception as e:
             self.logger.error(f"Ошибка при обновлении данных из DaData: {e}") 

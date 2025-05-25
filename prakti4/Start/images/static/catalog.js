@@ -1,17 +1,13 @@
-// Глобальные переменные
 let cars = [];
 let editingCarId = null;
 
-// Загрузка данных при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
     loadCars();
     setupEventListeners();
     updateFavoriteButtons();
 });
 
-// Настройка обработчиков событий
 function setupEventListeners() {
-    // Обработчики фильтров
     const filterForm = document.getElementById('filterForm');
     if (filterForm) {
         filterForm.addEventListener('submit', (e) => {
@@ -40,14 +36,11 @@ function setupEventListeners() {
         });
     }
 
-    // Обработчик сохранения автомобиля
     document.getElementById('saveCarBtn').addEventListener('click', saveCar);
 
-    // Обработчик формы
     document.getElementById('carForm').addEventListener('submit', (e) => e.preventDefault());
 }
 
-// Загрузка списка автомобилей
 function loadCars() {
     fetch('/cars')
         .then(response => response.json())
@@ -61,7 +54,6 @@ function loadCars() {
     });
 }
 
-// Отображение списка автомобилей
 function displayCars(carsToDisplay) {
     const carsList = document.getElementById('carsList');
     if (!carsList) return;
@@ -70,16 +62,11 @@ function displayCars(carsToDisplay) {
     updateFavoriteButtons();
 }
 
-// Создание карточки автомобиля
 function createCarCard(car) {
-    // Формируем название
     const name = `${car.make || ''} ${car.model || ''} ${car.year || ''}`.trim();
-    // Используем описание из car.description
     const description = car.description || '';
-    // Заглушка для картинки
     const image = car.image || '/static/images/no-image.jpg';
     const isInFavorite = isInFavorites(car.id);
-    // Форматируем цену с пробелами и знаком рубля
     let priceStr = '';
     if (car.price) {
         priceStr = Number(car.price).toLocaleString('ru-RU') + ' ₽';
@@ -114,23 +101,19 @@ function createCarCard(car) {
     `;
 }
 
-// Фильтрация автомобилей
 function filterCars(filters) {
     let filtered = cars;
 
-    // Фильтр по марке
     if (filters.brand && filters.brand !== 'Все') {
         filtered = filtered.filter(car => (car.make || '').toLowerCase() === filters.brand.toLowerCase());
     }
 
-    // Фильтр по типу кузова (если есть specs.body)
     if (filters.category && filters.category !== 'Все') {
         filtered = filtered.filter(car =>
             car.specs && car.specs.body && car.specs.body.toLowerCase() === filters.category.toLowerCase()
         );
     }
 
-    // Фильтр по году выпуска
     if (filters.yearMin) {
         filtered = filtered.filter(car => car.year >= parseInt(filters.yearMin));
     }
@@ -138,7 +121,6 @@ function filterCars(filters) {
         filtered = filtered.filter(car => car.year <= parseInt(filters.yearMax));
     }
 
-    // Фильтр по цене
     if (filters.priceMin) {
         filtered = filtered.filter(car => car.price >= parseInt(filters.priceMin));
     }
@@ -146,7 +128,6 @@ function filterCars(filters) {
         filtered = filtered.filter(car => car.price <= parseInt(filters.priceMax));
     }
 
-    // Фильтр по комплектации (features) — если specs содержит нужные параметры
     if (filters.features && filters.features.length > 0) {
         filtered = filtered.filter(car => {
             if (!car.specs) return false;
@@ -161,12 +142,10 @@ function filterCars(filters) {
     displayCars(filtered);
 }
 
-// Сохранение автомобиля
 async function saveCar() {
     const form = document.getElementById('carForm');
     const formData = new FormData(form);
     
-    // Собираем данные формы
     const carData = {
         id: editingCarId || `${formData.get('brand').toLowerCase()}-${formData.get('title').toLowerCase()}-${formData.get('year')}`,
         brand: formData.get('brand'),
@@ -181,12 +160,11 @@ async function saveCar() {
         category: formData.get('category'),
         description: formData.get('description'),
         features: Array.from(formData.getAll('features')),
-        images: [], // Будет заполнено после загрузки изображений
-        rating: 0 // Новые автомобили начинают с рейтинга 0
+        images: [],
+        rating: 0
     };
 
     try {
-        // Загрузка изображений
         const imageFiles = formData.getAll('images');
         if (imageFiles.length === 0 && !editingCarId) {
             throw new Error('Пожалуйста, загрузите хотя бы одно изображение');
@@ -205,7 +183,6 @@ async function saveCar() {
 
         carData.images = await Promise.all(imageUploadPromises);
 
-        // Сохранение данных автомобиля
         const response = await fetch('/api/cars', {
             method: editingCarId ? 'PUT' : 'POST',
             headers: {
@@ -218,7 +195,6 @@ async function saveCar() {
             throw new Error('Ошибка при сохранении автомобиля');
         }
 
-        // Обновляем список и закрываем модальное окно
         await loadCars();
         const modal = bootstrap.Modal.getInstance(document.getElementById('addCarModal'));
         modal.hide();
@@ -237,7 +213,6 @@ async function saveCar() {
     }
 }
 
-// Редактирование автомобиля
 function editCar(carId) {
     const car = cars.find(c => c.id === carId);
     if (!car) return;
@@ -245,7 +220,6 @@ function editCar(carId) {
     editingCarId = carId;
     const form = document.getElementById('carForm');
     
-    // Заполняем форму данными автомобиля
     form.elements['brand'].value = car.brand;
     form.elements['title'].value = car.title;
     form.elements['price'].value = parseInt(car.price.replace(/[^\d]/g, ''));
@@ -258,18 +232,15 @@ function editCar(carId) {
     form.elements['category'].value = car.category;
     form.elements['description'].value = car.description;
 
-    // Отмечаем features
     const checkboxes = form.querySelectorAll('input[name="features"]');
     checkboxes.forEach(checkbox => {
         checkbox.checked = car.features.includes(checkbox.value);
     });
 
-    // Открываем модальное окно
     const modal = new bootstrap.Modal(document.getElementById('addCarModal'));
     modal.show();
 }
 
-// Удаление автомобиля
 async function deleteCar(carId) {
     const result = await Swal.fire({
         title: 'Удаление автомобиля',
@@ -305,7 +276,6 @@ async function deleteCar(carId) {
     }
 }
 
-// Функция для проверки авторизации
 function checkAuth() {
     const token = localStorage.getItem('auth_token');
     return {
@@ -314,7 +284,6 @@ function checkAuth() {
     };
 }
 
-// Функция для добавления в избранное
 function addToFavorites(carId) {
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     if (!favorites.includes(carId)) {
@@ -324,7 +293,6 @@ function addToFavorites(carId) {
     }
 }
 
-// Функция для удаления из избранного
 function removeFromFavorites(carId) {
     let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     const index = favorites.indexOf(carId);
@@ -335,13 +303,11 @@ function removeFromFavorites(carId) {
     }
 }
 
-// Функция для проверки, находится ли автомобиль в избранном
 function isInFavorites(carId) {
     const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     return favorites.includes(carId);
 }
 
-// Функция для переключения состояния избранного
 function toggleFavorite(button, carId) {
     const auth = checkAuth();
     if (!auth.isAuthenticated) {
@@ -372,7 +338,6 @@ function toggleFavorite(button, carId) {
     }
 }
 
-// Функция для отображения уведомлений
 function showToast(message) {
     Swal.fire({
         text: message,
@@ -385,7 +350,6 @@ function showToast(message) {
     });
 }
 
-// Функция для обновления состояния кнопок избранного
 function updateFavoriteButtons() {
     document.querySelectorAll('.favorite-button').forEach(button => {
         const carId = button.dataset.carId;
@@ -400,7 +364,6 @@ function updateFavoriteButtons() {
     });
 }
 
-// Функция для отображения ошибок
 function showError(message) {
     Swal.fire({
         title: 'Ошибка!',
@@ -410,7 +373,6 @@ function showError(message) {
     });
 }
 
-// Функция для перехода на страницу деталей автомобиля
 function showCarDetails(carId) {
     window.location.href = `/cars/${carId}`;
 } 

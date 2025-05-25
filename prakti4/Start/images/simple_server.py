@@ -32,13 +32,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-# Секретный ключ для JWT
-app.config['SECRET_KEY'] = 'your-secret-key'  # В продакшене используйте безопасный ключ
+app.config['SECRET_KEY'] = 'your-secret-key'
 
-# Временное хранилище пользователей (в реальном приложении используйте базу данных)
 users = {}
 
-# Примеры API-эндпоинтов (замените на реальные)
 API_ENDPOINTS = {
     'manufacturer': 'https://api.example.com/manufacturer',
     'aggregator': 'https://api.example.com/aggregator',
@@ -46,7 +43,6 @@ API_ENDPOINTS = {
     'crash_tests': 'https://api.example.com/crash_tests'
 }
 
-# Добавляем константы для API
 DADATA_API_KEY = "8c70fbaff7d669cfb7dd873ca4cb42893213d598"
 DADATA_API_URL = "http://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/car_brand"
 NHTSA_API_URL = "https://vpic.nhtsa.dot.gov/api/vehicles"
@@ -54,7 +50,6 @@ NHTSA_API_URL = "https://vpic.nhtsa.dot.gov/api/vehicles"
 CARAPI_KEY = "206efdd2-b95b-4c59-9e20-33e2d190272d"
 CARAPI_URL = "https://carapi.app/api"
 
-# Словарь с характеристиками по умолчанию для моделей из CarAPI.app (примерные значения, все ключи в нижнем регистре)
 DEFAULT_SPECS = {
     ("toyota", "camry"): {"engine": "2.5L I4", "body": "Sedan", "transmission": "Automatic", "drivetrain": "FWD", "mileage": 0},
     ("toyota", "corolla"): {"engine": "1.8L I4", "body": "Sedan", "transmission": "CVT", "drivetrain": "FWD", "mileage": 0},
@@ -75,7 +70,6 @@ DEFAULT_SPECS = {
     ("lada", "granta"): {"engine": "1.6L I4", "body": "Sedan", "transmission": "Manual", "drivetrain": "FWD", "mileage": 0},
     ("toyota", "scion xa"): {"engine": "1.5L I4", "body": "Hatchback", "transmission": "Automatic", "drivetrain": "FWD", "mileage": 0},
     ("toyota", "scion tc"): {"engine": "2.4L I4", "body": "Coupe", "transmission": "Manual", "drivetrain": "FWD", "mileage": 0},
-    # ... можно добавить другие модели по мере необходимости ...
 }
 
 FIXED_MODELS = [
@@ -99,32 +93,26 @@ FIXED_MODELS = [
     ("bmw", "135i"),
 ]
 
-# Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Инициализация менеджера данных
 with app.app_context():
     car_manager = CarDataManager()
-    print("Initializing car_manager...")  # Отладочная информация
+    print("Initializing car_manager...")
 
-    # Регистрация скрапера
     auto_ru_scraper = AutoRuScraper()
-    print("Created AutoRuScraper instance")  # Отладочная информация
+    print("Created AutoRuScraper instance")
     car_manager.register_api('auto_ru_scraper', auto_ru_scraper)
-    print("Registered auto_ru_scraper API")  # Отладочная информация
+    print("Registered auto_ru_scraper API")
 
-    # Регистрация API
     auto_ru_api = AutoRuAPI(api_key=os.getenv('AUTO_RU_API_KEY'))
     drom_api = DromAPI(api_key=os.getenv('DROM_API_KEY'))
 
     car_manager.register_api('auto_ru_api', auto_ru_api)
     car_manager.register_api('drom', drom_api)
 
-    # Проверка регистрации API
-    print("Registered APIs after initialization:", car_manager.apis.keys())  # Отладочная информация
+    print("Registered APIs after initialization:", car_manager.apis.keys())
 
-# Декоратор для обеспечения контекста приложения
 def with_app_context(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -132,11 +120,9 @@ def with_app_context(f):
             return f(*args, **kwargs)
     return decorated_function
 
-# --- Адаптеры для разных API ---
 def fetch_from_carapi(make, model):
     try:
         headers = {"Authorization": f"Bearer {CARAPI_KEY}"}
-        # Пример запроса к CarAPI.app
         response = requests.get(f"{CARAPI_URL}/trims?make={make}&model={model}", headers=headers)
         if response.status_code == 200:
             data = response.json().get("data", [])
@@ -192,7 +178,6 @@ def fetch_from_nhtsa(make, model):
         return []
 
 def fetch_from_reviews_api(make, model):
-    # Пример: возвращаем тестовые отзывы
     return [{
         "make": make,
         "model": model,
@@ -201,9 +186,7 @@ def fetch_from_reviews_api(make, model):
         "source": "reviews"
     }]
 
-# --- Унификация и сопоставление ---
 def normalize_car_data(car, source):
-    # Привести к единому формату в зависимости от источника
     if source == "carapi":
         return car
     elif source == "nhtsa":
@@ -231,7 +214,6 @@ def normalize_car_data(car, source):
     return car
 
 def merge_cars(car_list):
-    # Сопоставление и объединение дубликатов (по make, model, year)
     merged = defaultdict(lambda: {
         "make": None, "model": None, "year": None, "specs": {}, "price": None,
         "reviews": [], "crash_test": {}, "images": []
@@ -242,86 +224,67 @@ def merge_cars(car_list):
         m["make"] = car["make"]
         m["model"] = car["model"]
         m["year"] = car["year"]
-        # Объединяем характеристики
         if car.get("specs"):
             m["specs"].update(car["specs"])
-        # Объединяем отзывы
         if car.get("reviews"):
             m["reviews"].extend(car["reviews"])
-        # Объединяем crash_test
         if car.get("crash_test"):
             m["crash_test"].update(car["crash_test"])
-        # Объединяем изображения
         if car.get("images"):
             m["images"].extend(car["images"])
-        # Цена — берём первую не None
         if m["price"] is None and car.get("price") is not None:
             m["price"] = car["price"]
     return list(merged.values())
 
-# --- Основная функция обновления ---
 def update_cars_data():
     all_raw = []
-    # Пример: фиксированный список моделей
     for make, model in [
         ("Toyota", "Camry"), ("BMW", "3 Series"), ("Kia", "Rio")
     ]:
         all_raw += fetch_from_carapi(make, model)
         all_raw += fetch_from_nhtsa(make, model)
         all_raw += fetch_from_reviews_api(make, model)
-    # Нормализация
     normalized = [normalize_car_data(car, car.get('source')) for car in all_raw]
-    # Сопоставление и объединение
     merged = merge_cars(normalized)
     return merged
 
-# Маршруты для статических файлов
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path)
 
-# Маршрут для изображений автомобилей
 @app.route('/static/images/<path:path>')
 def send_car_images(path):
     return send_from_directory('static/images', path)
 
-# Главная страница
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Страница каталога
 @app.route('/catalog')
 def catalog():
     """Страница каталога автомобилей"""
     return render_template('catalog.html')
 
-# Страница избранного
 @app.route('/favorites')
 def favorites():
     return render_template('favorites.html')
 
-# Страница подбора авто
 @app.route('/pairwise')
 def pairwise():
     return render_template('pairwise.html')
 
-# Страница подбора авто (альтернативный маршрут)
 @app.route('/selection')
 def selection():
     return render_template('pairwise.html')
 
-# Страница авторизации
 @app.route('/auth/login')
 def login_page():
     return render_template('login.html')
 
-# Страница регистрации
 @app.route('/auth/register')
 def register_page():
     return render_template('register.html')
 
-# API для регистрации
 @app.route('/api/register', methods=['POST'])
 def api_register():
     data = request.json
@@ -344,7 +307,6 @@ def api_register():
     db.session.commit()
     return jsonify({'message': 'Пользователь успешно зарегистрирован'})
 
-# API для входа
 @app.route('/api/login', methods=['POST'])
 def api_login():
     data = request.json
@@ -367,7 +329,6 @@ def api_login():
         })
     return jsonify({'error': 'Неверный email или пароль'}), 401
 
-# Декоратор для проверки токена и получения пользователя
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -385,7 +346,6 @@ def token_required(f):
         return f(user, *args, **kwargs)
     return decorated
 
-# Получить профиль пользователя
 @app.route('/api/profile', methods=['GET'])
 @token_required
 def get_profile(user):
@@ -407,7 +367,6 @@ def get_profile(user):
         'created_at': user.created_at.isoformat() if user.created_at else None
     })
 
-# Обновить профиль пользователя
 @app.route('/api/profile', methods=['POST'])
 @token_required
 def update_profile(user):
@@ -442,12 +401,10 @@ def update_profile(user):
     db.session.commit()
     return jsonify({'message': 'Профиль обновлён'})
 
-# Страница профиля
 @app.route('/profile')
 def profile():
     return render_template('profile.html')
 
-# Страница отдельного автомобиля
 @app.route('/cars/<int:car_id>')
 def car_details(car_id):
     from models import Car
@@ -462,19 +419,16 @@ def get_cars_list():
     result = []
     for car in all_cars:
         specs = car.specs or {}
-        # Формируем описание в стиле: '2.5 AT | 15 000 км | Москва'
         engine = specs.get('engine', '')
         transmission = specs.get('transmission', '')
         mileage = specs.get('mileage', None)
         city = specs.get('city', '') or 'Москва'
-        # Преобразуем коробку в более привычный вид
         transmission_ru = {
             'Automatic': 'AT',
             'CVT': 'CVT',
             'Manual': 'MT',
             '': ''
         }.get(transmission, transmission)
-        # Формируем строку описания
         desc_parts = []
         if engine:
             desc_parts.append(engine)
@@ -516,7 +470,6 @@ def add_criterion():
     db.session.commit()
     return jsonify({'message': 'Критерий добавлен!'})
 
-# API для массового добавления машин в базу (пример)
 @app.route('/api/add_cars', methods=['POST'])
 def add_cars():
     data = request.json
@@ -571,8 +524,6 @@ def get_car_details(car_id):
         if not car:
             return jsonify({"error": "Car not found"}), 404
 
-        # --- АВТОЗАПОЛНЕНИЕ НЕДОСТАЮЩИХ ПОЛЕЙ ---
-        # Список полей, которые нужно проверять и дополнять
         FIELDS_TO_CHECK = [
             'body_type', 'engine_type', 'transmission', 'fuel_type', 'color', 'generation',
             'trim', 'tax', 'drivetrain', 'steering', 'condition', 'owners', 'pts',
@@ -587,12 +538,9 @@ def get_car_details(car_id):
                 need_update = True
 
         if need_update:
-            # Пример: используем внешний API для автозаполнения (можно расширить список источников)
             dadata = DadataAPI('8c70fbaff7d669cfb7dd873ca4cb42893213d598')
-            # Формируем идентификатор для поиска (например, dadata_Make_Model)
             car_id_str = f"dadata_{car.make}_{car.model}"
             api_data = dadata.get_car_details(car_id_str)
-            # Обновляем только отсутствующие поля
             for field in FIELDS_TO_CHECK:
                 if missing_fields.get(field) and api_data.get(field):
                     setattr(car, field, api_data[field])
@@ -608,15 +556,13 @@ def add_car():
     """Добавление нового автомобиля"""
     try:
         data = request.json
-        print("Received car data:", data)  # Отладочная информация
+        print("Received car data:", data)
 
-        # Проверка обязательных полей
         required_fields = ['make', 'model', 'year', 'price']
         for field in required_fields:
             if field not in data:
                 return jsonify({'error': f'Missing required field: {field}'}), 400
 
-        # Создание нового автомобиля в базе данных (без description)
         car = Car(
             make=data['make'],
             model=data['model'],
@@ -657,15 +603,12 @@ def add_car():
 def car_details_page():
     return render_template('car-details.html', car=None)
 
-# Получить рекомендации на основе весов критериев
 @app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
     weights = request.json
     try:
-        # Получаем все автомобили из базы данных
         cars = Car.query.all()
 
-        # Фильтруем нежелательные машины
         filtered_cars = [
             car for car in cars
             if not (
@@ -675,12 +618,10 @@ def get_recommendations():
         ]
 
         print("cars in DB (filtered):", [(car.make, car.model, car.year, car.price) for car in filtered_cars])
-        # Нормализуем веса
         total_weight = sum(weights.values())
         normalized_weights = {k: v/total_weight for k, v in weights.items()}
         print("weights:", weights)
         print("normalized_weights:", normalized_weights)
-        # Рассчитываем оценки для каждого автомобиля
         car_scores = []
         for car in filtered_cars:
             criteria_scores = {
@@ -690,7 +631,6 @@ def get_recommendations():
                 'Экономичность': calculate_efficiency_score(car),
                 'Надежность': calculate_reliability_score(car)
             }
-            # Вычисляем общий балл по ключам из normalized_weights
             match_score = sum(criteria_scores.get(crit, 0) * normalized_weights.get(crit, 0) for crit in normalized_weights)
             car_scores.append({
                 'id': car.id,
@@ -711,38 +651,32 @@ def get_recommendations():
                 'criteriaScores': criteria_scores
             })
         print("car_scores:", car_scores)
-        # Сортируем по общему баллу
         car_scores.sort(key=lambda x: x['matchScore'], reverse=True)
-        return jsonify(car_scores[:5])  # Return top 5 recommendations
+        return jsonify(car_scores[:5])
     except Exception as e:
         print(f"Error getting recommendations: {e}")
         return jsonify([])
 
-# Функции для расчета оценок по критериям
 def calculate_price_score(price):
-    # Чем ниже цена, тем выше оценка (от 0 до 1)
-    max_price = 10000000  # Максимальная цена для нормализации
+    max_price = 10000000
     return 1 - (price / max_price)
 
 def calculate_safety_score(car):
-    # Оценка безопасности на основе наличия систем безопасности
-    score = 0.5  # Базовый балл
+    score = 0.5
     if car.safety_features:
         features = car.safety_features.split(',')
-        score += len(features) * 0.1  # +0.1 за каждую систему
+        score += len(features) * 0.1
     return min(score, 1.0)
 
 def calculate_comfort_score(car):
-    # Оценка комфорта на основе наличия опций комфорта
-    score = 0.5  # Базовый балл
+    score = 0.5
     if car.comfort_features:
         features = car.comfort_features.split(',')
-        score += len(features) * 0.1  # +0.1 за каждую опцию
+        score += len(features) * 0.1
     return min(score, 1.0)
 
 def calculate_efficiency_score(car):
-    # Оценка экономичности на основе типа топлива и расхода
-    score = 0.5  # Базовый балл
+    score = 0.5
     if car.fuel_type == 'Электрический':
         score += 0.3
     elif car.fuel_type == 'Гибрид':
@@ -750,14 +684,13 @@ def calculate_efficiency_score(car):
     if car.fuel_consumption:
         try:
             consumption = float(car.fuel_consumption)
-            score += (10 - min(consumption, 10)) * 0.05  # +0.05 за каждый литр меньше 10
+            score += (10 - min(consumption, 10)) * 0.05
         except:
             pass
     return min(score, 1.0)
 
 def calculate_reliability_score(car):
-    # Оценка надежности на основе года выпуска и пробега
-    score = 0.5  # Базовый балл
+    score = 0.5
     current_year = datetime.now().year
     age = current_year - car.year
     if age <= 3:
@@ -777,7 +710,6 @@ def calculate_reliability_score(car):
             pass
     return min(score, 1.0)
 
-# --- ДОБАВЛЕНИЕ 10 ФИКСИРОВАННЫХ МАШИН ПРИ СТАРТЕ ---
 def add_fixed_cars():
     cars = [
         {
@@ -1062,7 +994,6 @@ def add_fixed_cars():
 
 @app.route('/cars/<int:car_id>/review', methods=['POST'])
 def add_review(car_id):
-    # Получаем токен из заголовка
     token = request.headers.get('Authorization')
     author = None
     if token:
@@ -1091,15 +1022,13 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         add_fixed_cars()
-        # Добавляем обогащение данных для всех машин в базе после добавления фиксированных
         from models import Car
-        from api.dadata_api import DadataAPI # Убедимся, что импорт DadataAPI доступен здесь
-        print("Starting data enrichment for fixed cars...") # Отладочное сообщение
-        dadata = DadataAPI('8c70fbaff7d669cfb7dd873ca4cb4293213d598') # Убедимся, что API ключ правильный
+        from api.dadata_api import DadataAPI
+        print("Starting data enrichment for fixed cars...")
+        dadata = DadataAPI('8c70fbaff7d669cfb7dd873ca4cb4293213d598')
 
-        # Проходим по всем машинам в базе данных
         all_cars_in_db = Car.query.all()
-        print(f"Found {len(all_cars_in_db)} cars in the database.") # Отладочное сообщение
+        print(f"Found {len(all_cars_in_db)} cars in the database.")
 
         FIELDS_TO_CHECK = [
             'body_type', 'engine_type', 'transmission', 'fuel_type', 'color', 'generation',
@@ -1112,29 +1041,26 @@ if __name__ == '__main__':
             missing_fields = {}
             for field in FIELDS_TO_CHECK:
                 value = getattr(car, field, None)
-                # Проверяем, отсутствует ли поле или содержит пустую строку, '-' или '—'
                 if not value or str(value).strip() in ['', '-', '—', 'None']:
                     missing_fields[field] = True
                     need_update = True
 
             if need_update:
                 try:
-                    # Формируем идентификатор для поиска (например, dadata_Make_Model)
-                    # Приводим make и model к нижнему регистру и заменяем пробелы на подчеркивания для URL
                     car_make_model_str = f"{car.make.lower().replace(' ', '_')}_{car.model.lower().replace(' ', '_')}"
                     car_id_str = f"dadata_{car_make_model_str}"
-                    print(f"Attempting to enrich car {car.make} {car.model} (ID: {car.id}) with DadataAPI using key: {car_id_str}") # Отладочное сообщение
+                    print(f"Attempting to enrich car {car.make} {car.model} (ID: {car.id}) with DadataAPI using key: {car_id_str}")
                     api_data = dadata.get_car_details(car_id_str)
 
                     if api_data:
-                        print(f"Received data from DadataAPI for {car.make} {car.model}: {api_data}") # Отладочное сообщение
+                        print(f"Received data from DadataAPI for {car.make} {car.model}: {api_data}")
                         updated_fields = []
                         for field in FIELDS_TO_CHECK:
                             if missing_fields.get(field) and api_data.get(field) and str(api_data.get(field)).strip() not in ['', '-', '—', 'None']:
                                 setattr(car, field, api_data[field])
                                 updated_fields.append(field)
                         if updated_fields:
-                             db.session.commit() # Коммитим изменения для этой машины
+                             db.session.commit()
                              print(f"Обогащены данные для машины {car.make} {car.model} {car.year}. Обновлены поля: {', '.join(updated_fields)}")
                         else:
                             print(f"Для машины {car.make} {car.model} {car.year} нет новых данных для обогащения.")
@@ -1144,6 +1070,6 @@ if __name__ == '__main__':
                 except Exception as e:
                     print(f"Ошибка при обогащении данных для машины {car.make} {car.model} {car.year} (ID: {car.id}): {e}")
 
-        print("Data enrichment for fixed cars completed.") # Отладочное сообщение
+        print("Data enrichment for fixed cars completed.")
         app.api_manager = get_api_manager()
     app.run(debug=True, port=5001) 
