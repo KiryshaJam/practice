@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - АвтоЭксперт</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">АвтоЭксперт</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog">Каталог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pairwise">Подбор авто</a>
+                    </li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="/auth/login" class="btn btn-outline-light me-2">Войти</a>
+                    <a href="/auth/register" class="btn btn-light active">Регистрация</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Регистрация</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="registerForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="first_name" class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="last_name" class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div class="form-text">
+                                    Пароль должен содержать минимум 8 символов, включая буквы и цифры
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">Подтверждение пароля</label>
+                                <input type="password" class="form-control" id="password2" name="password2" required>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    Я согласен с <a href="/terms">условиями использования</a> и <a href="/privacy">политикой конфиденциальности</a>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+                        </form>
+                        <div id="registerMessage"></div>
+                        <div class="mt-3 text-center">
+                            <p>Уже есть аккаунт? <a href="/auth/login">Войти</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const first_name = document.getElementById('first_name').value;
+        const last_name = document.getElementById('last_name').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const password2 = document.getElementById('password2').value;
+        const msg = document.getElementById('registerMessage');
+        msg.textContent = '';
+        if (password !== password2) {
+            msg.textContent = 'Пароли не совпадают!';
+            msg.style.color = 'red';
+            return;
+        }
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName: first_name, lastName: last_name, email, password })
+        });
+        const data = await response.json();
+        if (response.ok) {
+            msg.textContent = 'Регистрация успешна! Теперь вы можете войти.';
+            msg.style.color = 'green';
+            document.getElementById('registerForm').reset();
+        } else {
+            if (data.error === 'Пользователь уже существует') {
+                msg.textContent = 'Пользователь с таким email уже зарегистрирован';
+            } else {
+            msg.textContent = data.error || 'Ошибка регистрации';
+            }
+            msg.style.color = 'red';
+        }
+    });
+    </script>
+</body>
+</html> 

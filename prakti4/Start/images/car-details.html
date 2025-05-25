@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали автомобиля</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="car-details-container">
+        <h1 id="car-title"></h1>
+        <div class="car-details-card">
+            <img id="car-image" src="" alt="Фото автомобиля" class="car-image"/>
+            <div class="car-main-info">
+                <h2>Основные характеристики</h2>
+                <p><b>Тип кузова:</b> <span id="body-type"></span></p>
+                <p><b>Двигатель:</b> <span id="engine-type"></span></p>
+                <p><b>Коробка передач:</b> <span id="transmission"></span></p>
+                <p><b>Топливо:</b> <span id="fuel-type"></span></p>
+                <p><b>Год выпуска:</b> <span id="year"></span></p>
+                <p><b>Цена:</b> <span id="price"></span></p>
+            </div>
+            <div class="car-crash-tests">
+                <h3>Краш-тесты</h3>
+                <p>NHTSA: <span id="nhtsa-rating"></span></p>
+                <p>Euro NCAP: <span id="euro-ncap-rating"></span></p>
+            </div>
+            <div class="car-reviews">
+                <h3>Отзывы владельцев</h3>
+                <ul id="reviews-list"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="car-details.js"></script>
+</body>
+</html> 

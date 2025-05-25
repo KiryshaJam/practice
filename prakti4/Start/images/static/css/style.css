@@ -1,0 +1,368 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+header {
+    background-color: #333;
+    padding: 1rem;
+}
+
+nav {
+    display: flex;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+}
+
+nav a.active {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+/* Стили каталога */
+.catalog {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.filters {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.filter-group select,
+.filter-group input[type="range"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#apply-filters {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#apply-filters:hover {
+    background-color: #444;
+}
+
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.car-card {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.car-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.car-card-content {
+    padding: 1rem;
+}
+
+.car-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+.car-card .price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.car-card .specs {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.car-card .specs div {
+    margin-bottom: 0.25rem;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #bbb;
+    box-shadow: 0 2px 8px #0001;
+    cursor: pointer;
+    z-index: 2;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+}
+
+.favorite-btn:hover {
+    background: #ffeaea;
+    color: #e53935;
+}
+
+.favorite-btn.active {
+    color: #e53935;
+    background: #ffeaea;
+}
+
+.favorite-btn i {
+    font-size: 20px;
+}
+
+/* Стили формы добавления автомобиля */
+.add-car-form {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.add-car-form h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.add-car-form button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.add-car-form button:hover {
+    background-color: #444;
+}
+
+/* Стили для детальной информации об автомобиле */
+.car-details {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.car-details-container {
+    max-width: 900px;
+    margin: 40px auto 0 auto;
+    padding: 0 20px;
+}
+
+.car-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #222;
+}
+
+.car-price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #1a4d2e;
+}
+
+.car-details-content {
+    display: flex;
+    gap: 32px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px;
+    margin-bottom: 40px;
+}
+
+.car-image img {
+    width: 320px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    background: #f0f0f0;
+}
+
+.car-specs {
+    flex: 1;
+}
+
+.car-specs h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    color: #1a4d2e;
+    margin-bottom: 12px;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 24px;
+    margin-bottom: 24px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+}
+
+.spec-label {
+    font-weight: bold;
+    color: #666;
+}
+
+.spec-value {
+    color: #222;
+}
+
+.crash-tests {
+    margin-bottom: 24px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+.crash-test-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+.crash-test-item:last-child {
+    border-bottom: none;
+}
+
+.crash-test-label {
+    font-weight: bold;
+    color: #666;
+}
+
+.crash-test-value {
+    color: #f1c40f;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.reviews {
+    margin-bottom: 24px;
+}
+
+.review-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #222;
+}
+
+.description-block {
+    margin-bottom: 24px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.features-block {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 1rem;
+}
+
+.features-block div {
+    margin-bottom: 6px;
+}
+
+@media (max-width: 900px) {
+    .car-details-content {
+        flex-direction: column;
+        padding: 16px;
+    }
+    .car-image img {
+        width: 100%;
+        height: 180px;
+    }
+} 

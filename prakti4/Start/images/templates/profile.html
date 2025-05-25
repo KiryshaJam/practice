@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль пользователя - АвтоЭксперт</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">АвтоЭксперт</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog">Каталог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pairwise">Подбор авто</a>
+                    </li>
+                </ul>
+            <div class="auth-buttons">
+                    <a href="/auth/login" class="btn btn-outline-light me-2 auth-login">Войти</a>
+                    <a href="/auth/register" class="btn btn-light auth-register">Регистрация</a>
+                    <div class="user-menu d-none">
+                        <a href="/profile" class="btn btn-outline-light me-2">Профиль</a>
+                        <button class="btn btn-light" onclick="logout()">Выйти</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Профиль пользователя</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="profileForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Имя</label>
+                                    <input type="text" class="form-control" id="first_name" name="first_name">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Фамилия</label>
+                                    <input type="text" class="form-control" id="last_name" name="last_name">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Цели использования</label>
+                                <div id="usage_goals_group" class="form-check-group">
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_work" value="Работа"><label class="form-check-label" for="goal_work">Работа</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_family" value="Семья"><label class="form-check-label" for="goal_family">Семья</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_travel" value="Путешествия"><label class="form-check-label" for="goal_travel">Путешествия</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_city" value="Город"><label class="form-check-label" for="goal_city">Город</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_dacha" value="Дача"><label class="form-check-label" for="goal_dacha">Дача</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="goal_other" value="Другое"><label class="form-check-label" for="goal_other">Другое</label></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Бюджет (₽)</label>
+                                <input type="number" class="form-control" id="budget" name="budget" min="0">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Тип кузова</label>
+                                    <select class="form-select" id="body_type" name="body_type">
+                                        <option value="">Не выбрано</option>
+                                        <option>Седан</option>
+                                        <option>Хэтчбек</option>
+                                        <option>Универсал</option>
+                                        <option>Кроссовер</option>
+                                        <option>Внедорожник</option>
+                                        <option>Купе</option>
+                                        <option>Кабриолет</option>
+                                        <option>Минивэн</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Тип топлива</label>
+                                    <select class="form-select" id="fuel_type" name="fuel_type">
+                                        <option value="">Не выбрано</option>
+                                        <option>Бензин</option>
+                                        <option>Дизель</option>
+                                        <option>Электро</option>
+                                        <option>Гибрид</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Трансмиссия</label>
+                                    <select class="form-select" id="transmission" name="transmission">
+                                        <option value="">Не выбрано</option>
+                                        <option>Механическая</option>
+                                        <option>Автоматическая</option>
+                                        <option>CVT</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Привод</label>
+                                    <select class="form-select" id="drivetrain" name="drivetrain">
+                                        <option value="">Не выбрано</option>
+                                        <option>Передний</option>
+                                        <option>Задний</option>
+                                        <option>Полный</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Мощность двигателя (л.с.)</label>
+                                    <input type="number" class="form-control" id="engine_power" name="engine_power" min="0">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Расход топлива (л/100км)</label>
+                                    <input type="number" class="form-control" id="fuel_consumption" name="fuel_consumption" min="0" step="0.1">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Безопасность</label>
+                                <div id="safety_features_group" class="form-check-group">
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_abs" value="ABS"><label class="form-check-label" for="safety_abs">ABS</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_esp" value="ESP"><label class="form-check-label" for="safety_esp">ESP</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_airbags" value="Подушки безопасности"><label class="form-check-label" for="safety_airbags">Подушки безопасности</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_lane" value="Система контроля полосы"><label class="form-check-label" for="safety_lane">Система контроля полосы</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_camera" value="Камера заднего вида"><label class="form-check-label" for="safety_camera">Камера заднего вида</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="safety_other" value="Другое"><label class="form-check-label" for="safety_other">Другое</label></div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Комфорт</label>
+                                <div id="comfort_features_group" class="form-check-group">
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_ac" value="Кондиционер"><label class="form-check-label" for="comfort_ac">Кондиционер</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_climate" value="Климат-контроль"><label class="form-check-label" for="comfort_climate">Климат-контроль</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_media" value="Мультимедиа"><label class="form-check-label" for="comfort_media">Мультимедиа</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_cruise" value="Круиз-контроль"><label class="form-check-label" for="comfort_cruise">Круиз-контроль</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_heat" value="Подогрев сидений"><label class="form-check-label" for="comfort_heat">Подогрев сидений</label></div>
+                                    <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="comfort_other" value="Другое"><label class="form-check-label" for="comfort_other">Другое</label></div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Сохранить профиль</button>
+                        </form>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/auth.js"></script>
+    <script>
+    async function loadProfile() {
+        const token = localStorage.getItem('auth_token');
+        if (!token) return;
+        const resp = await fetch('/api/profile', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        document.getElementById('first_name').value = data.first_name || '';
+        document.getElementById('last_name').value = data.last_name || '';
+        document.getElementById('email').value = data.email || '';
+        document.getElementById('budget').value = data.budget || '';
+        document.getElementById('body_type').value = data.body_type || '';
+        document.getElementById('fuel_type').value = data.fuel_type || '';
+        document.getElementById('transmission').value = data.transmission || '';
+        document.getElementById('drivetrain').value = data.drivetrain || '';
+        document.getElementById('engine_power').value = data.engine_power || '';
+        document.getElementById('fuel_consumption').value = data.fuel_consumption || '';
+        // Чекбоксы целей
+        const usageGoals = data.usage_goals || [];
+        document.querySelectorAll('#usage_goals_group input[type=checkbox]').forEach(cb => {
+            cb.checked = usageGoals.includes(cb.value);
+        });
+        // Чекбоксы безопасности
+        const safety = data.safety_features || [];
+        document.querySelectorAll('#safety_features_group input[type=checkbox]').forEach(cb => {
+            cb.checked = safety.includes(cb.value);
+        });
+        // Чекбоксы комфорта
+        const comfort = data.comfort_features || [];
+        document.querySelectorAll('#comfort_features_group input[type=checkbox]').forEach(cb => {
+            cb.checked = comfort.includes(cb.value);
+        });
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        console.log('Сохраняем профиль...');
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            console.error('Нет токена авторизации!');
+            Swal.fire('Ошибка', 'Вы не авторизованы', 'error');
+                return;
+            }
+        // Чекбоксы целей
+        const usage_goals = Array.from(document.querySelectorAll('#usage_goals_group input[type=checkbox]:checked')).map(cb => cb.value);
+        // Чекбоксы безопасности
+        const safety_features = Array.from(document.querySelectorAll('#safety_features_group input[type=checkbox]:checked')).map(cb => cb.value);
+        // Чекбоксы комфорта
+        const comfort_features = Array.from(document.querySelectorAll('#comfort_features_group input[type=checkbox]:checked')).map(cb => cb.value);
+        
+        const body = {
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            usage_goals,
+            budget: document.getElementById('budget').value,
+            body_type: document.getElementById('body_type').value,
+            fuel_type: document.getElementById('fuel_type').value,
+            transmission: document.getElementById('transmission').value,
+            drivetrain: document.getElementById('drivetrain').value,
+            engine_power: document.getElementById('engine_power').value,
+            fuel_consumption: document.getElementById('fuel_consumption').value,
+            safety_features,
+            comfort_features
+        };
+        console.log('Отправляем данные профиля:', body);
+        try {
+            const resp = await fetch('/api/profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(body)
+            });
+            const data = await resp.json();
+            console.log('Ответ сервера:', resp.status, data);
+            if (resp.ok) {
+                Swal.fire('Успех', 'Профиль сохранён', 'success');
+            } else {
+                Swal.fire('Ошибка', data.error || data.message || 'Не удалось сохранить профиль', 'error');
+            }
+        } catch (err) {
+            console.error('Ошибка при отправке запроса:', err);
+            Swal.fire('Ошибка', 'Ошибка сети или сервера', 'error');
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', loadProfile);
+    </script>
+</body>
+</html> 

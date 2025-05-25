@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+.car-details-flex {
+  display: flex;
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #0001;
+  padding: 2.5rem 2rem;
+}
+.car-details-left {
+  flex: 1 1 320px;
+  min-width: 280px;
+}
+.car-details-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  font-size: 1.08em;
+}
+.car-details-table td {
+  padding: 0.2em 0.5em 0.2em 0;
+  color: #222;
+}
+.car-details-table td:first-child {
+  color: #888;
+  min-width: 120px;
+  font-weight: 500;
+}
+.car-details-table a { color: #1976d2; text-decoration: underline; }
+.car-details-table a:hover { color: #125ea2; }
+
+.car-details-right {
+  flex: 1 1 480px;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.car-main-photo {
+  width: 100%;
+  max-width: 480px;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px #0002;
+}
+.car-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+.car-thumb {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border 0.2s;
+}
+.car-thumb.selected, .car-thumb:hover {
+  border: 2px solid #1976d2;
+}
+@media (max-width: 900px) {
+  .car-details-flex { flex-direction: column; align-items: stretch; }
+  .car-details-right { align-items: stretch; }
+}
+</style>
+<div class="car-details-flex">
+  <div class="car-details-left">
+    <h2 style="margin-bottom:1.2em; font-size:1.45em; font-weight:600; color:#222;">{{ car.make }} {{ car.model }}, {{ car.year }}</h2>
+    <table class="car-details-table">
+      <tr><td>Наличие</td><td>В наличии</td></tr>
+      <tr><td>Поколение</td><td>{{ car.generation or '-' }}</td></tr>
+      <tr><td>Год выпуска</td><td>{{ car.year or '-' }}</td></tr>
+      <tr><td>Пробег</td><td>{{ car.mileage or '-' }} км</td></tr>
+      <tr><td>Кузов</td><td>{{ car.body_type or '-' }}</td></tr>
+      <tr><td>Цвет</td><td>{{ car.color or '-' }}</td></tr>
+      <tr><td>Двигатель</td><td>{{ car.engine_type or '-' }}</td></tr>
+      <tr><td>Комплектация</td><td>{{ car.trim or '-' }}</td></tr>
+      <tr><td>Налог</td><td>{{ car.tax or '-' }}</td></tr>
+      <tr><td>Коробка</td><td>{{ car.transmission or '-' }}</td></tr>
+      <tr><td>Привод</td><td>{{ car.drivetrain or '-' }}</td></tr>
+      <tr><td>Руль</td><td>{{ car.steering or '-' }}</td></tr>
+      <tr><td>Состояние</td><td>{{ car.condition or '-' }}</td></tr>
+      <tr><td>Владельцы</td><td>{{ car.owners or '-' }}</td></tr>
+      <tr><td>ПТС</td><td>{{ car.pts or '-' }}</td></tr>
+      <tr><td>Владение</td><td>{{ car.ownership_period or '-' }}</td></tr>
+      <tr><td>Таможня</td><td>{{ car.customs or '-' }}</td></tr>
+    </table>
+    <div class="car-extra-info" style="margin-top: 1.5em; width:100%;">
+      <div class="crash-test-block">
+        <strong>Безопасность (краш-тест):</strong>
+        {% set key = (car.make|lower ~ ' ' ~ car.model|lower ~ ' ' ~ (car.year|string)) %}
+        {% if key == 'audi q7 2022' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% elif key == 'kia rio 2021' %}
+          <span class="stars">★ ★ ★ ☆ ☆</span>
+        {% elif key == 'hyundai solaris 2022' %}
+          <span class="stars">★ ★ ★ ☆ ☆</span>
+        {% elif key == 'volkswagen passat 2018' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% elif key == 'lada vesta 2021' %}
+          <span class="stars">★ ★ ★ ☆ ☆</span>
+        {% elif key == 'mercedes-benz c-class 2020' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% elif key == 'audi a4 2019' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% elif key == 'kia sportage 2022' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% elif key == 'toyota rav4 2021' %}
+          <span class="stars">★ ★ ★ ★ ★</span>
+        {% else %}
+          <span class="stars">☆ ☆ ☆ ☆ ☆</span>
+          <span>(Нет данных)</span>
+        {% endif %}
+      </div>
+      <div class="owner-reviews" style="margin-top:1em;">
+        <strong>Отзывы владельцев:</strong>
+        <div class="reviews-list">
+        {% if car.reviews and car.reviews|length > 0 %}
+          {% for review in car.reviews %}
+            <div class="review-card">
+              <div class="review-header">
+                <span class="review-author">{{ review.author or 'Аноним' }}</span>
+                <span class="review-rating">{{ review.rating }}★</span>
+              </div>
+              <div class="review-comment">{{ review.comment }}</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="review-card review-empty">Пока нет отзывов</div>
+        {% endif %}
+        </div>
+      </div>
+      <div class="review-form" style="margin-top:1.5em;">
+        <strong>Оставить отзыв:</strong>
+        <form id="reviewForm" action="/cars/{{ car.id }}/review" method="post">
+          <div class="form-row author-row">
+            <label for="author">Имя (опционально):</label>
+            <input type="text" id="author" name="author" />
+          </div>
+          <div class="form-row">
+            <label for="rating">Рейтинг:</label>
+            <select id="rating" name="rating" required>
+              <option value="1">1★</option>
+              <option value="2">2★</option>
+              <option value="3">3★</option>
+              <option value="4">4★</option>
+              <option value="5">5★</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label for="comment">Ваш отзыв:</label>
+            <textarea id="comment" name="comment" required></textarea>
+          </div>
+          <button class="review-btn" type="submit">Отправить</button>
+        </form>
+      </div>
+      <script>
+      // Скрыть поле 'Имя' для авторизованных пользователей
+      document.addEventListener('DOMContentLoaded', function() {
+        if (localStorage.getItem('auth_token')) {
+          var authorRow = document.querySelector('.author-row');
+          if (authorRow) authorRow.style.display = 'none';
+        }
+      });
+      </script>
+      <style>
+      .reviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        margin: 1em 0 0.5em 0;
+      }
+      .review-card {
+        background: #f7f9fa;
+        border-radius: 10px;
+        box-shadow: 0 1px 6px #0001;
+        padding: 0.8em 1.1em;
+        font-size: 1.04em;
+        color: #222;
+        transition: box-shadow 0.2s;
+      }
+      .review-card.review-empty {
+        color: #888;
+        background: #f3f3f3;
+        text-align: center;
+      }
+      .review-card:hover {
+        box-shadow: 0 2px 12px #0002;
+      }
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.3em;
+      }
+      .review-author {
+        font-weight: 600;
+        color: #1976d2;
+      }
+      .review-rating {
+        font-size: 1.1em;
+        color: #f7b500;
+        font-weight: 600;
+      }
+      .review-comment {
+        margin-left: 0.1em;
+        color: #222;
+      }
+      .review-form {
+        background: #f7f9fa;
+        border-radius: 10px;
+        box-shadow: 0 1px 6px #0001;
+        padding: 1.2em 1.2em 1em 1.2em;
+        margin-top: 1.2em;
+        max-width: 420px;
+      }
+      .review-form strong {
+        font-size: 1.13em;
+        color: #1976d2;
+        margin-bottom: 0.7em;
+        display: block;
+      }
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0.8em;
+      }
+      .form-row label {
+        margin-bottom: 0.3em;
+        color: #555;
+        font-size: 1em;
+      }
+      .form-row input,
+      .form-row select,
+      .form-row textarea {
+        border: 1px solid #cfd8dc;
+        border-radius: 6px;
+        padding: 0.5em 0.7em;
+        font-size: 1em;
+        background: #fff;
+        transition: border 0.2s;
+      }
+      .form-row input:focus,
+      .form-row select:focus,
+      .form-row textarea:focus {
+        border: 1.5px solid #1976d2;
+        outline: none;
+      }
+      .form-row textarea {
+        min-height: 60px;
+        resize: vertical;
+      }
+      .review-btn {
+        background: linear-gradient(90deg, #1976d2 60%, #2196f3 100%);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 0.7em 1.5em;
+        font-size: 1.08em;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 1px 4px #1976d222;
+        transition: background 0.2s, box-shadow 0.2s;
+      }
+      .review-btn:hover {
+        background: linear-gradient(90deg, #125ea2 60%, #1976d2 100%);
+        box-shadow: 0 2px 10px #1976d244;
+      }
+      </style>
+    </div>
+  </div>
+  <div class="car-details-right">
+    <img id="mainPhoto" class="car-main-photo" src="{{ (car.images[0] if car.images and car.images|length > 0 else car.image_url) or '/static/images/no-image.jpg' }}" alt="Фото авто">
+    {% if car.images and car.images|length > 1 %}
+    <div class="car-thumbs">
+      {% for img in car.images %}
+        <img src="{{ img }}" class="car-thumb{% if loop.index0 == 0 %} selected{% endif %}" onclick="document.getElementById('mainPhoto').src='{{ img }}'; document.querySelectorAll('.car-thumb').forEach(e=>e.classList.remove('selected')); this.classList.add('selected');">
+      {% endfor %}
+      {% if car.images|length > 8 %}
+        <div style="display:flex;align-items:center;justify-content:center;width:80px;height:60px;background:#eee;border-radius:6px;font-size:1.1em;color:#555;">Ещё {{ car.images|length-8 }} фото</div>
+      {% endif %}
+    </div>
+    {% endif %}
+    <div id="car-details-js"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/car-details.js"></script>
+{% endblock %} 

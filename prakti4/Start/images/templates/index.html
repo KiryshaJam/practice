@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>АвтоЭксперт - Подбор автомобиля</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+    .card-random {
+      position: relative;
+      width: 270px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px #0001;
+      overflow: hidden;
+      margin: 1.2em;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+    .card-random:hover {
+      box-shadow: 0 4px 24px #0002;
+    }
+    .card-random img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 16px 16px 0 0;
+    }
+    .card-random .fav-icon {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fff;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3em;
+      color: #bbb;
+      box-shadow: 0 2px 8px #0001;
+      cursor: pointer;
+      z-index: 2;
+      transition: background 0.2s, color 0.2s;
+    }
+    .card-random .fav-icon.active {
+      color: #e53935;
+      background: #ffeaea;
+    }
+    .card-random .fav-icon:hover {
+      background: #ffeaea;
+      color: #e53935;
+    }
+    .card-random .fav-icon svg .heart-shape {
+      stroke: #bbb;
+      fill: none;
+      transition: stroke 0.2s, fill 0.2s;
+    }
+    .card-random .fav-icon.active svg .heart-shape,
+    .card-random .fav-icon:hover svg .heart-shape {
+      stroke: #e53935;
+      fill: #e53935;
+    }
+    .card-random .price {
+      font-size: 1.25em;
+      font-weight: 700;
+      color: #222;
+      margin: 0.7em 0 0.2em 0.7em;
+    }
+    .card-random .model {
+      font-size: 1.08em;
+      color: #222;
+      margin: 0 0 0.2em 0.7em;
+      font-weight: 500;
+    }
+    .card-random .desc {
+      font-size: 0.98em;
+      color: #666;
+      margin: 0 0 0.7em 0.7em;
+    }
+    .card-random .mileage {
+      font-size: 0.98em;
+      color: #888;
+      margin: 0 0 0.7em 0.7em;
+    }
+    .cars-random-flex {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5em;
+    }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">АвтоЭксперт</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog">Каталог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/pairwise">Подбор авто</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/favorites">Избранное</a>
+                    </li>
+                </ul>
+            <div class="auth-buttons">
+                    <a href="/auth/login" class="btn btn-outline-light me-2 auth-login">Войти</a>
+                    <a href="/auth/register" class="btn btn-light auth-register">Регистрация</a>
+                    <div class="user-menu d-none">
+                        <a href="/profile" class="btn btn-outline-light me-2">Профиль</a>
+                        <button class="btn btn-light" onclick="logout()">Выйти</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Найди свою идеальную машину</h2>
+            <p>Используйте наш сервис для подбора автомобиля, который идеально соответствует вашим потребностям и предпочтениям</p>
+            <div class="hero-buttons">
+                <a href="/catalog" class="hero-button">Перейти в каталог</a>
+                <a href="/pairwise" class="hero-button">Сравнить критерии</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="brand-strip">
+        <div class="brand-list">
+            <div class="brand" data-brand="lada">
+                <img src="/static/images/lada-logo.png" alt="Lada">
+                <span>Lada</span>
+            </div>
+            <div class="brand" data-brand="bmw">
+                <img src="/static/images/bmw-logo.png" alt="BMW">
+                <span>BMW</span>
+            </div>
+            <div class="brand" data-brand="kia">
+                <img src="/static/images/kia-logo.png" alt="Kia">
+                <span>Kia</span>
+            </div>
+            <div class="brand" data-brand="hyundai">
+                <img src="/static/images/hyundai-logo.png" alt="Hyundai">
+                <span>Hyundai</span>
+            </div>
+            <div class="brand" data-brand="mercedes">
+                <img src="/static/images/mercedes-logo.png" alt="Mercedes">
+                <span>Mercedes</span>
+            </div>
+            <div class="brand" data-brand="volkswagen">
+                <img src="/static/images/volkswagen-logo.png" alt="Volkswagen">
+                <span>Volkswagen</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="cars cars-random-flex" id="carContainer">
+    </section>
+
+    <footer>
+        <p>&copy; 2025 АвтоЭксперт. Все права защищены.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/auth.js"></script>
+    <script src="/static/index.js"></script>
+    <script>
+    function getRandomItems(arr, n) {
+        const result = [];
+        const taken = new Set();
+        while (result.length < n && result.length < arr.length) {
+            const idx = Math.floor(Math.random() * arr.length);
+            if (!taken.has(idx)) {
+                result.push(arr[idx]);
+                taken.add(idx);
+            }
+        }
+        return result;
+    }
+
+    function formatMileage(mileage) {
+        if (!mileage) return '-';
+        return mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' км';
+    }
+
+    function isFavorite(carId) {
+        const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        return favorites.includes(carId);
+    }
+
+    function toggleFavorite(carId, iconElem) {
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        if (favorites.includes(carId)) {
+            favorites = favorites.filter(id => id !== carId);
+            iconElem.classList.remove('active');
+        } else {
+            favorites.push(carId);
+            iconElem.classList.add('active');
+        }
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+
+    async function showRandomCars() {
+        const container = document.getElementById('carContainer');
+        container.innerHTML = '';
+        try {
+            const response = await fetch('/api/cars');
+            const cars = await response.json();
+            const randomCars = getRandomItems(cars, 3);
+            randomCars.forEach(car => {
+                const card = document.createElement('div');
+                card.className = 'card-random';
+                card.innerHTML = `
+                    <img src="${car.image_url || (car.images && car.images[0]) || '/static/images/no-image.jpg'}" alt="${car.make} ${car.model}">
+                    <div class="fav-icon${isFavorite(car.id) ? ' active' : ''}" title="В избранное">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path class="heart-shape" d="M12 21s-5.05-4.35-7.07-6.36C2.2 12.91 2 10.28 3.64 8.64c1.64-1.64 4.28-1.44 5.99.27L12 11.29l2.37-2.38c1.71-1.71 4.35-1.91 5.99-0.27 1.64 1.64 1.44 4.27-0.29 5.99C17.05 16.65 12 21 12 21z" stroke="currentColor" stroke-width="2" fill="none"/>
+                      </svg>
+                    </div>
+                    <div class="price">${car.price ? car.price.toLocaleString() + ' ₽' : ''}</div>
+                    <div class="model">${car.make} ${car.model}${car.generation ? ' ' + car.generation : ''}</div>
+                    <div class="desc">${(car.year && car.mileage) ? car.year + ' / ' + formatMileage(car.mileage) : (car.year ? car.year : (car.mileage ? formatMileage(car.mileage) : ''))}</div>
+                `;
+                const favIcon = card.querySelector('.fav-icon');
+                favIcon.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(car.id, favIcon);
+                };
+                card.onclick = (e) => {
+                    if (e.target.classList.contains('fav-icon')) return;
+                    window.location.href = `/cars/${car.id}`;
+                };
+                container.appendChild(card);
+            });
+        } catch (e) {
+            container.innerHTML = '<p>Не удалось загрузить автомобили.</p>';
+        }
+    }
+
+    showRandomCars();
+    </script>
+</body>
+</html> 

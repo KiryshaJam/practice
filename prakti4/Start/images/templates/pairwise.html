@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подбор автомобиля</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">АвтоЭксперт</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/catalog">Каталог</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/pairwise">Подбор авто</a>
+                    </li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+
+    <main class="pairwise-container">
+        <section class="pairwise-section">
+            <h2>Сравнение критериев выбора автомобиля</h2>
+            
+            <div class="description">
+                <p>Для того чтобы помочь вам выбрать идеальный автомобиль, нам нужно понять, какие характеристики для вас важнее.</p>
+                <p>Сравните попарно критерии, используя шкалу Саати для оценки относительной важности:</p>
+                <ul>
+                    <li>1/5 - левый критерий в 5 раз важнее правого</li>
+                    <li>1/3 - левый критерий в 3 раза важнее правого</li>
+                    <li>1 - критерии одинаково важны</li>
+                    <li>3 - правый критерий в 3 раза важнее левого</li>
+                    <li>5 - правый критерий в 5 раз важнее левого</li>
+                </ul>
+            </div>
+
+            <div class="progress-container">
+                <p>Прогресс сравнения: <span class="progress-text">0%</span></p>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="comparisonContainer" class="comparison-container">
+                <div class="comparison-pair">
+                    <div class="criterion left">
+                        <h4 id="criterion1">Цена</h4>
+                        <p id="description1">Стоимость автомобиля</p>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <input type="range" class="comparison-slider" min="-2" max="2" value="0" step="1">
+                        <div class="slider-labels">
+                            <span>В 5 раз важнее</span>
+                            <span>В 3 раза важнее</span>
+                            <span>Одинаково важны</span>
+                            <span>В 3 раза важнее</span>
+                            <span>В 5 раз важнее</span>
+                        </div>
+                    </div>
+                    
+                    <div class="criterion right">
+                        <h4 id="criterion2">Безопасность</h4>
+                        <p id="description2">Системы безопасности и защиты</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="comparison-help">
+                <button type="button" class="help-button" onclick="toggleHelp()">
+                    Как сравнивать?
+                </button>
+                <div id="helpText" class="help-text" style="display: none;">
+                    <h4>Как проводить сравнение:</h4>
+                    <ul>
+                        <li>Если критерии одинаково важны - оставьте ползунок посередине (значение 1)</li>
+                        <li>Передвиньте ползунок влево, если левый критерий важнее:
+                            <ul>
+                                <li>На 1 деление - в 3 раза важнее (значение 1/3)</li>
+                                <li>На 2 деления - в 5 раз важнее (значение 1/5)</li>
+                            </ul>
+                        </li>
+                        <li>Передвиньте ползунок вправо, если правый критерий важнее:
+                            <ul>
+                                <li>На 1 деление - в 3 раза важнее (значение 3)</li>
+                                <li>На 2 деления - в 5 раз важнее (значение 5)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="comparison-buttons">
+                <button id="prevButton" class="nav-button" onclick="prevComparison()" disabled>Назад</button>
+                <button id="nextButton" class="nav-button" onclick="nextComparison()">Далее</button>
+                <button id="finishButton" class="finish-button" onclick="finishComparison()" style="display: none;">Завершить</button>
+            </div>
+
+            <div id="results" class="results" style="display: none;">
+                <div id="weightsList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Добавляем модальное окно -->
+    <div id="carModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 АвтоЭксперт. Все права защищены.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/static/cars-data.js"></script>
+    <script src="/static/pairwise_new.js"></script>
+</body>
+</html> 
